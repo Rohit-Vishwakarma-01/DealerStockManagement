@@ -1447,111 +1447,60 @@ function doPDF() {
   var title=dealer||'Design Details Report';
   var date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
   var total=0; for (var i=0;i<rows.length;i++) total+=(rows[i].qty||1);
-
-  /* ── Build table rows ── */
   var trs='';
   for (var i=0;i<rows.length;i++) {
-    var r=rows[i];
-    trs+='<tr class="'+(i%2?'even':'odd')+'">'+
-      '<td class="c">'+esc(String(i+1))+'</td>'+
-      '<td class="l b">'+esc(r.n)+'</td>'+
-      '<td class="c">'+esc(r.s)+'</td>'+
-      '<td class="c g">'+esc(String(r.nb))+'</td>'+
-      '<td class="c b">'+esc(String(r.qty||1))+'</td></tr>';
+    var r=rows[i], bg=i%2?'#f5f9fd':'#fff';
+    trs+='<tr style="background:'+bg+'">'+
+      '<td style="text-align:center;color:#888;font-weight:600;padding:8px 10px;border:1px solid #dde3ea">'+(i+1)+'</td>'+
+      '<td style="font-weight:600;color:#1a3a5c;padding:8px 12px;border:1px solid #dde3ea">'+esc(r.n)+'</td>'+
+      '<td style="text-align:center;padding:8px 10px;border:1px solid #dde3ea">'+esc(r.s)+'</td>'+
+      '<td style="text-align:center;font-family:monospace;color:#375623;font-weight:700;padding:8px 10px;border:1px solid #dde3ea">'+esc(String(r.nb))+'</td>'+
+      '<td style="text-align:center;font-weight:700;color:#1a3a5c;padding:8px 10px;border:1px solid #dde3ea">'+(r.qty||1)+'</td></tr>';
   }
+  var badge=dealer?'<div style="display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:2px 12px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">DEALER</div>':'';
+  var sub=dealer?'Design Details Report &middot; Generated on '+date:'Generated on '+date;
+  var metaD=dealer?'<span>Dealer: <strong style="color:#1a3a5c">'+esc(dealer)+'</strong></span>':'';
+  var foot=dealer?'Dealer: '+esc(dealer)+' &middot; Design Manager':'Design Manager Report';
+  var htmlContent =
+    '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(title)+'</title>'+
+    '<style>*{box-sizing:border-box;margin:0;padding:0}'+
+    'body{font-family:"Segoe UI",Arial,sans-serif;padding:24px;color:#222}'+
+    '.hdr{background:linear-gradient(135deg,#1a3a5c,#2e74b5);color:#fff;padding:22px 28px;border-radius:8px 8px 0 0}'+
+    '.hdr h1{font-size:26px;font-weight:800;line-height:1.2}'+
+    '.hdr p{font-size:12px;opacity:.75;margin-top:5px}'+
+    '.meta{background:#ebf3fb;padding:10px 28px;border:1px solid #bdd7ee;border-top:none;display:flex;gap:24px;font-size:12px;color:#444;flex-wrap:wrap}'+
+    'table{width:100%;border-collapse:collapse}'+
+    'thead th{background:#1a3a5c;color:#fff;padding:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:1px solid #0d2440}'+
+    '.foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:8px;border-top:1px solid #dde3ea}'+
+    '@media print{.np{display:none}body{padding:10mm 15mm}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'+
+    '</style></head><body>'+
+    '<div class="hdr">'+badge+'<h1>'+esc(title)+'</h1><p>'+sub+'</p></div>'+
+    '<div class="meta">'+metaD+
+      '<span>Total Designs: <strong style="color:#1a3a5c">'+rows.length+'</strong></span>'+
+      '<span>Total Qty: <strong style="color:#1a3a5c">'+total+'</strong></span>'+
+      '<span>Date: <strong style="color:#1a3a5c">'+date+'</strong></span></div>'+
+    '<table><thead><tr>'+
+      '<th style="width:40px">SR.</th><th style="text-align:left">DESIGN NAME</th>'+
+      '<th>SURFACE</th><th>NUMBAR</th><th>QTY</th></tr></thead>'+
+    '<tbody>'+trs+'</tbody>'+
+    '<tfoot><tr>'+
+      '<td colspan="4" style="text-align:right;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#1a3a5c">TOTAL QTY</td>'+
+      '<td style="text-align:center;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#375623;font-size:16px">'+total+'</td>'+
+    '</tr></tfoot></table>'+
+    '<div class="foot"><span>'+foot+'</span><span>'+rows.length+' item'+(rows.length!==1?'s':'')+' | Total Qty: '+total+'</span></div>'+
+    '<br></body></html>';
 
-  /* ── Inject print styles once ── */
-  if (!document.getElementById('pdfPrintStyle')) {
-    var st=document.createElement('style');
-    st.id='pdfPrintStyle';
-    st.textContent=
-      /* Hide everything except overlay when printing */
-      '@media print{'+
-        '@page{size:A4;margin:0}'+
-        'body>*:not(#pdfOv){display:none!important}'+
-        '#pdfOv{display:block!important}'+
-        'html,body{margin:0!important;padding:0!important;background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-      '}'+
-      /* Overlay base styles (hidden by default) */
-      '#pdfOv{display:none;position:fixed;inset:0;background:#fff;z-index:99999;overflow:auto;font-family:"Segoe UI",Arial,sans-serif;color:#222}'+
-      '#pdfOv .wrap{padding:20mm 18mm 15mm}'+
-      /* Header */
-      '#pdfOv .ph{border-bottom:3px solid #1a3a5c;padding-bottom:12px;margin-bottom:14px}'+
-      '#pdfOv .ph h1{font-size:22px;font-weight:800;color:#1a3a5c;margin:0 0 4px}'+
-      '#pdfOv .ph .sub{font-size:11px;color:#666}'+
-      '#pdfOv .ph .dealer-badge{display:inline-block;background:#1a3a5c;color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 10px;border-radius:20px;margin-bottom:6px}'+
-      /* Meta row */
-      '#pdfOv .pm{display:flex;gap:28px;font-size:11px;color:#555;background:#f5f8fb;border:1px solid #d8e4f0;border-radius:4px;padding:8px 14px;margin-bottom:14px;flex-wrap:wrap}'+
-      '#pdfOv .pm strong{color:#1a3a5c;font-weight:700}'+
-      /* Table */
-      '#pdfOv table{width:100%;border-collapse:collapse;font-size:12px}'+
-      '#pdfOv thead th{background:#1a3a5c;color:#fff;padding:9px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:1px solid #0d2240}'+
-      '#pdfOv tbody tr.even{background:#f5f9fd}'+
-      '#pdfOv tbody tr.odd{background:#fff}'+
-      '#pdfOv tbody td{padding:8px 10px;border:1px solid #dde6f0;vertical-align:middle}'+
-      '#pdfOv .c{text-align:center}'+
-      '#pdfOv .l{text-align:left}'+
-      '#pdfOv .b{font-weight:600;color:#1a3a5c}'+
-      '#pdfOv .g{font-family:monospace;color:#375623;font-weight:700}'+
-      '#pdfOv tfoot td{padding:10px;font-weight:700;background:#eef4fb;border:1px solid #dde6f0}'+
-      '#pdfOv .tot-l{text-align:right;color:#1a3a5c;font-size:12px}'+
-      '#pdfOv .tot-v{text-align:center;color:#375623;font-size:15px}'+
-      /* Footer line */
-      '#pdfOv .pf{margin-top:14px;padding-top:8px;border-top:1px solid #dde6f0;display:flex;justify-content:space-between;font-size:10px;color:#999}'+
-      /* Print button (hidden when printing) */
-      '#pdfOv .pbtn{text-align:center;margin-top:20px}'+
-      '@media print{#pdfOv .pbtn{display:none}}';
-    document.head.appendChild(st);
-  }
-
-  /* ── Build overlay HTML ── */
-  var dealerBadge=dealer?'<span class="dealer-badge">DEALER</span><br>':'';
-  var metaDealer=dealer?'<span>Dealer: <strong>'+esc(dealer)+'</strong></span>':'';
-  var footTxt=dealer?'Dealer: '+esc(dealer)+' \u00b7 Design Manager':'Design Manager Report';
-
-  var html=
-    '<div class="wrap">'+
-      '<div class="ph">'+dealerBadge+
-        '<h1>'+esc(title)+'</h1>'+
-        '<div class="sub">'+(dealer?'Design Details Report &middot; ':'')+'Generated on '+date+'</div>'+
-      '</div>'+
-      '<div class="pm">'+metaDealer+
-        '<span>Total Designs: <strong>'+rows.length+'</strong></span>'+
-        '<span>Total Qty: <strong>'+total+'</strong></span>'+
-        '<span>Date: <strong>'+date+'</strong></span>'+
-      '</div>'+
-      '<table>'+
-        '<thead><tr>'+
-          '<th class="c" style="width:42px">SR.</th>'+
-          '<th class="l">DESIGN NAME</th>'+
-          '<th class="c">SURFACE</th>'+
-          '<th class="c">NUMBAR</th>'+
-          '<th class="c" style="width:50px">QTY</th>'+
-        '</tr></thead>'+
-        '<tbody>'+trs+'</tbody>'+
-        '<tfoot><tr>'+
-          '<td colspan="4" class="tot-l">TOTAL QTY</td>'+
-          '<td class="tot-v c">'+total+'</td>'+
-        '</tr></tfoot>'+
-      '</table>'+
-      '<div class="pf"><span>'+footTxt+'</span><span>'+rows.length+' item'+(rows.length!==1?'s':'')+' &nbsp;|&nbsp; Total Qty: '+total+'</span></div>'+
-      '<div class="pbtn">'+
-        '<button onclick="window.print()" style="padding:10px 28px;background:#1a3a5c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700;margin-right:10px">&#128196; Print / Save as PDF</button>'+
-        '<button onclick="document.getElementById(\'pdfOv\').style.display=\'none\'" style="padding:10px 20px;background:#eee;color:#333;border:none;border-radius:6px;cursor:pointer;font-size:14px">&#x2715; Close</button>'+
-      '</div>'+
-    '</div>';
-
-  /* ── Show overlay ── */
-  var ov=document.getElementById('pdfOv');
-  if (!ov){ov=document.createElement('div');ov.id='pdfOv';document.body.appendChild(ov);}
-  ov.innerHTML=html;
-  ov.style.display='block';
-  document.body.style.overflow='hidden';
-
-  /* Close restores scroll */
-  ov.querySelector('.pbtn button:last-child').addEventListener('click',function(){
-    document.body.style.overflow='';
-  });
+  var iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none;z-index:-1';
+  document.body.appendChild(iframe);
+  var idoc = iframe.contentWindow.document;
+  idoc.open(); idoc.write(htmlContent); idoc.close();
+  iframe.contentWindow.focus();
+  setTimeout(function(){
+    iframe.contentWindow.print();
+    setTimeout(function(){ document.body.removeChild(iframe); }, 2000);
+  }, 500);
+  toast('PDF preview opened','ok');
 }
 
 gid('srchInp').addEventListener('input', function(){ searchQ=this.value; gid('srchClr').style.display=searchQ?'block':'none'; renderList(); });
