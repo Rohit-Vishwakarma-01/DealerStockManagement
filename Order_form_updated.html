@@ -1461,9 +1461,7 @@ function doPDF() {
   var sub=dealer?'Design Details Report &middot; Generated on '+date:'Generated on '+date;
   var metaD=dealer?'<span>Dealer: <strong style="color:#1a3a5c">'+esc(dealer)+'</strong></span>':'';
   var foot=dealer?'Dealer: '+esc(dealer)+' &middot; Design Manager':'Design Manager Report';
-  var win=window.open('','_blank','width=920,height=700');
-  if (!win) { toast('Allow popups for PDF preview','err'); return; }
-  win.document.write(
+  var htmlContent =
     '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(title)+'</title>'+
     '<style>*{box-sizing:border-box;margin:0;padding:0}'+
     'body{font-family:"Segoe UI",Arial,sans-serif;padding:24px;color:#222}'+
@@ -1474,7 +1472,8 @@ function doPDF() {
     'table{width:100%;border-collapse:collapse}'+
     'thead th{background:#1a3a5c;color:#fff;padding:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:1px solid #0d2440}'+
     '.foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:8px;border-top:1px solid #dde3ea}'+
-    '@media print{.np{display:none}body{padding:10mm 15mm}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>'+
+    '@media print{.np{display:none}body{padding:10mm 15mm}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'+
+    '</style></head><body>'+
     '<div class="hdr">'+badge+'<h1>'+esc(title)+'</h1><p>'+sub+'</p></div>'+
     '<div class="meta">'+metaD+
       '<span>Total Designs: <strong style="color:#1a3a5c">'+rows.length+'</strong></span>'+
@@ -1492,9 +1491,13 @@ function doPDF() {
     '<br><div class="np" style="text-align:center;margin-top:16px">'+
       '<button onclick="window.print()" style="padding:10px 28px;background:#1a3a5c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700">Print / Save as PDF</button>'+
       '&nbsp;&nbsp;<button onclick="window.close()" style="padding:10px 20px;background:#eee;border:none;border-radius:6px;cursor:pointer;font-size:14px">Close</button>'+
-    '</div></body></html>'
-  );
-  win.document.close();
+    '</div></body></html>';
+
+  var blob = new Blob([htmlContent], {type: 'text/html'});
+  var blobUrl = URL.createObjectURL(blob);
+  var win = window.open(blobUrl, '_blank', 'width=920,height=700');
+  if (!win) { URL.revokeObjectURL(blobUrl); toast('Allow popups for PDF preview','err'); return; }
+  setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 10000);
   toast('PDF preview opened','ok');
 }
 
