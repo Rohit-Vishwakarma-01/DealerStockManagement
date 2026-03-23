@@ -8,6 +8,7 @@
 /* ── RESET ── */
 *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif}
 html{height:100%}body{height:100%;display:flex;flex-direction:column;background:#eef2f7;min-height:100vh}
+@media print{html,body{background:#fff!important;height:auto!important;min-height:unset!important;display:block!important}}
 
 /* ── TOP BAR ── */
 .topbar{background:linear-gradient(135deg,#1a3a5c,#2e74b5);color:#fff;padding:0 16px;min-height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);flex-wrap:wrap;gap:6px}
@@ -1461,46 +1462,60 @@ function doPDF() {
   var sub=dealer?'Design Details Report &middot; Generated on '+date:'Generated on '+date;
   var metaD=dealer?'<span>Dealer: <strong style="color:#1a3a5c">'+esc(dealer)+'</strong></span>':'';
   var foot=dealer?'Dealer: '+esc(dealer)+' &middot; Design Manager':'Design Manager Report';
-  var htmlContent =
-    '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(title)+'</title>'+
-    '<style>*{box-sizing:border-box;margin:0;padding:0}'+
-    'body{font-family:"Segoe UI",Arial,sans-serif;padding:24px;color:#222}'+
-    '.hdr{background:linear-gradient(135deg,#1a3a5c,#2e74b5);color:#fff;padding:22px 28px;border-radius:8px 8px 0 0}'+
-    '.hdr h1{font-size:26px;font-weight:800;line-height:1.2}'+
-    '.hdr p{font-size:12px;opacity:.75;margin-top:5px}'+
-    '.meta{background:#ebf3fb;padding:10px 28px;border:1px solid #bdd7ee;border-top:none;display:flex;gap:24px;font-size:12px;color:#444;flex-wrap:wrap}'+
-    'table{width:100%;border-collapse:collapse}'+
-    'thead th{background:#1a3a5c;color:#fff;padding:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:1px solid #0d2440}'+
-    '.foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:8px;border-top:1px solid #dde3ea}'+
-    '@media print{.np{display:none}body{padding:10mm 15mm}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'+
-    '</style></head><body>'+
-    '<div class="hdr">'+badge+'<h1>'+esc(title)+'</h1><p>'+sub+'</p></div>'+
-    '<div class="meta">'+metaD+
-      '<span>Total Designs: <strong style="color:#1a3a5c">'+rows.length+'</strong></span>'+
-      '<span>Total Qty: <strong style="color:#1a3a5c">'+total+'</strong></span>'+
-      '<span>Date: <strong style="color:#1a3a5c">'+date+'</strong></span></div>'+
-    '<table><thead><tr>'+
+  /* ── Build print content ── */
+  var printHTML =
+    '<div class="pdf-hdr">'+badge+'<h1>'+esc(title)+'</h1><p>'+sub+'</p></div>'+
+    '<div class="pdf-meta">'+metaD+
+      '<span>Total Designs: <strong>'+rows.length+'</strong></span>'+
+      '<span>Total Qty: <strong>'+total+'</strong></span>'+
+      '<span>Date: <strong>'+date+'</strong></span></div>'+
+    '<table class="pdf-tbl"><thead><tr>'+
       '<th style="width:40px">SR.</th><th style="text-align:left">DESIGN NAME</th>'+
       '<th>SURFACE</th><th>NUMBAR</th><th>QTY</th></tr></thead>'+
     '<tbody>'+trs+'</tbody>'+
     '<tfoot><tr>'+
-      '<td colspan="4" style="text-align:right;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#1a3a5c">TOTAL QTY</td>'+
-      '<td style="text-align:center;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#375623;font-size:16px">'+total+'</td>'+
+      '<td colspan="4" class="pdf-tot-lbl">TOTAL QTY</td>'+
+      '<td class="pdf-tot-val">'+total+'</td>'+
     '</tr></tfoot></table>'+
-    '<div class="foot"><span>'+foot+'</span><span>'+rows.length+' item'+(rows.length!==1?'s':'')+' | Total Qty: '+total+'</span></div>'+
-    '<br></body></html>';
+    '<div class="pdf-foot"><span>'+foot+'</span><span>'+rows.length+' item'+(rows.length!==1?'s':'')+' | Total Qty: '+total+'</span></div>';
 
-  var iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none;z-index:-1';
-  document.body.appendChild(iframe);
-  var idoc = iframe.contentWindow.document;
-  idoc.open(); idoc.write(htmlContent); idoc.close();
-  iframe.contentWindow.focus();
-  setTimeout(function(){
-    iframe.contentWindow.print();
-    setTimeout(function(){ document.body.removeChild(iframe); }, 2000);
-  }, 500);
-  toast('PDF preview opened','ok');
+  /* ── Inject print styles once ── */
+  if (!document.getElementById('pdfPrintStyle')) {
+    var st = document.createElement('style');
+    st.id = 'pdfPrintStyle';
+    st.textContent =
+      '@media print{' +
+        '@page{size:A4;margin:0}' +
+        'body>*:not(#pdfOverlay){display:none!important}' +
+        '#pdfOverlay{display:block!important;position:static!important}' +
+        'html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:0;padding:0;background:#fff!important;height:auto!important;min-height:unset!important}' +
+      '}' +
+      '#pdfOverlay{display:none;font-family:"Segoe UI",Arial,sans-serif;padding:15mm;color:#222;background:#fff}' +
+      '#pdfOverlay .pdf-hdr{background:linear-gradient(135deg,#1a3a5c,#2e74b5);color:#fff;padding:22px 28px;border-radius:8px 8px 0 0}' +
+      '#pdfOverlay .pdf-hdr h1{font-size:26px;font-weight:800;line-height:1.2}' +
+      '#pdfOverlay .pdf-hdr p{font-size:12px;opacity:.75;margin-top:5px}' +
+      '#pdfOverlay .pdf-meta{background:#ebf3fb;padding:10px 28px;border:1px solid #bdd7ee;border-top:none;display:flex;gap:24px;font-size:12px;color:#444;flex-wrap:wrap}' +
+      '#pdfOverlay .pdf-meta strong{color:#1a3a5c}' +
+      '#pdfOverlay .pdf-tbl{width:100%;border-collapse:collapse}' +
+      '#pdfOverlay .pdf-tbl thead th{background:#1a3a5c;color:#fff;padding:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:1px solid #0d2440}' +
+      '#pdfOverlay .pdf-tbl tbody tr:nth-child(even){background:#f5f9fd}' +
+      '#pdfOverlay .pdf-tbl tbody td{padding:8px 10px;border:1px solid #dde3ea;font-size:12px;text-align:center}' +
+      '#pdfOverlay .pdf-tbl tbody td:nth-child(2){font-weight:600;color:#1a3a5c;padding:8px 12px;text-align:left}' +
+      '#pdfOverlay .pdf-tbl tbody td:nth-child(4){font-family:monospace;color:#375623;font-weight:700}' +
+      '#pdfOverlay .pdf-tot-lbl{text-align:right;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#1a3a5c}' +
+      '#pdfOverlay .pdf-tot-val{text-align:center;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#375623;font-size:16px}' +
+      '#pdfOverlay .pdf-foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:8px;border-top:1px solid #dde3ea}';
+    document.head.appendChild(st);
+  }
+
+  /* ── Inject overlay into current page and print ── */
+  var ov = document.getElementById('pdfOverlay');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'pdfOverlay'; document.body.appendChild(ov); }
+  ov.innerHTML = printHTML;
+  ov.style.display = 'block';
+  window.print();
+  ov.style.display = 'none';
+  toast('Print dialog opened \u2014 Save as PDF to export','ok');
 }
 
 gid('srchInp').addEventListener('input', function(){ searchQ=this.value; gid('srchClr').style.display=searchQ?'block':'none'; renderList(); });
