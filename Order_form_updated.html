@@ -1474,7 +1474,7 @@ function doPDF() {
     'table{width:100%;border-collapse:collapse}'+
     'thead th{background:#1a3a5c;color:#fff;padding:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:1px solid #0d2440}'+
     '.foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:8px;border-top:1px solid #dde3ea}'+
-    '@media print{.np{display:none}body{padding:10px}@page{size:A4;margin:15mm}}</style></head><body>'+
+    '@media print{.np{display:none}body{padding:10mm 15mm}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>'+
     '<div class="hdr">'+badge+'<h1>'+esc(title)+'</h1><p>'+sub+'</p></div>'+
     '<div class="meta">'+metaD+
       '<span>Total Designs: <strong style="color:#1a3a5c">'+rows.length+'</strong></span>'+
