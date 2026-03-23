@@ -1488,16 +1488,18 @@ function doPDF() {
       '<td style="text-align:center;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#375623;font-size:16px">'+total+'</td>'+
     '</tr></tfoot></table>'+
     '<div class="foot"><span>'+foot+'</span><span>'+rows.length+' item'+(rows.length!==1?'s':'')+' | Total Qty: '+total+'</span></div>'+
-    '<br><div class="np" style="text-align:center;margin-top:16px">'+
-      '<button onclick="window.print()" style="padding:10px 28px;background:#1a3a5c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700">Print / Save as PDF</button>'+
-      '&nbsp;&nbsp;<button onclick="window.close()" style="padding:10px 20px;background:#eee;border:none;border-radius:6px;cursor:pointer;font-size:14px">Close</button>'+
-    '</div></body></html>';
+    '<br></body></html>';
 
-  var blob = new Blob([htmlContent], {type: 'text/html'});
-  var blobUrl = URL.createObjectURL(blob);
-  var win = window.open(blobUrl, '_blank', 'width=920,height=700');
-  if (!win) { URL.revokeObjectURL(blobUrl); toast('Allow popups for PDF preview','err'); return; }
-  setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 10000);
+  var iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none;z-index:-1';
+  document.body.appendChild(iframe);
+  var idoc = iframe.contentWindow.document;
+  idoc.open(); idoc.write(htmlContent); idoc.close();
+  iframe.contentWindow.focus();
+  setTimeout(function(){
+    iframe.contentWindow.print();
+    setTimeout(function(){ document.body.removeChild(iframe); }, 2000);
+  }, 500);
   toast('PDF preview opened','ok');
 }
 
