@@ -1,1558 +1,2382 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Design Manager</title>
-<style>
-/* ── RESET ── */
-*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif}
-html{height:100%}body{height:100%;display:flex;flex-direction:column;background:#eef2f7;min-height:100vh}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Design Manager</title>
+  <style>
+    /* ── RESET ── */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Arial, sans-serif
+    }
 
-/* ── TOP BAR ── */
-.topbar{background:linear-gradient(135deg,#1a3a5c,#2e74b5);color:#fff;padding:0 16px;min-height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);flex-wrap:wrap;gap:6px}
-.topbar h1{font-size:16px;font-weight:700}
-.topbar p{font-size:10px;opacity:.75;margin-top:1px}
-.badges{display:flex;gap:6px;flex-wrap:wrap}
-.badge{background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+    html {
+      height: 100%
+    }
 
-/* ── DEALER BAR ── */
-.dealerbar{background:#fff;border-bottom:2px solid #d0dce8;padding:6px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap}
-.dealerbar label{font-size:12px;font-weight:700;color:#1a3a5c;white-space:nowrap}
-.dealer-inp{border:2px solid #2e74b5;border-radius:7px;padding:5px 10px;font-size:13px;font-weight:600;color:#1a3a5c;width:200px;min-width:140px;outline:none;flex:1}
-.dealer-inp:focus{border-color:#1a3a5c;box-shadow:0 0 0 3px rgba(46,116,181,.15)}
-.dealer-inp::placeholder{color:#aac4df;font-weight:400}
-.dealer-hint{font-size:11px;color:#888;font-style:italic;display:none}
+    body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #eef2f7;
+      min-height: 100vh
+    }
 
-/* ── MAIN BODY ── */
-.body{display:flex;flex:1;min-height:0;overflow:hidden}
+    /* ── TOP BAR ── */
+    .topbar {
+      background: linear-gradient(135deg, #1a3a5c, #2e74b5);
+      color: #fff;
+      padding: 0 16px;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+      flex-wrap: wrap;
+      gap: 6px
+    }
 
-/* ── LEFT PANEL ── */
-.left{width:340px;flex-shrink:0;background:#fff;border-right:2px solid #d0dce8;display:flex;flex-direction:column;min-height:0;transition:transform .25s ease}
-.panel-hdr{background:#1a3a5c;color:#fff;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
-.panel-hdr .close-left{display:none;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1;opacity:.8}
-.panel-hdr .close-left:hover{opacity:1}
+    .topbar h1 {
+      font-size: 16px;
+      font-weight: 700
+    }
 
-/* search */
-.srch-wrap{padding:10px 12px 4px;flex-shrink:0;position:relative}
-.srch-inp{width:100%;padding:8px 28px 8px 32px;font-size:13px;border:2px solid #2e74b5;border-radius:7px;outline:none}
-.srch-inp:focus{border-color:#1a3a5c;box-shadow:0 0 0 3px rgba(46,116,181,.12)}
-.srch-ico{position:absolute;left:22px;top:20px;font-size:13px;pointer-events:none}
-.srch-clr{position:absolute;right:22px;top:18px;cursor:pointer;font-size:14px;color:#999;display:none;background:none;border:none;padding:2px;line-height:1}
-.srch-stats{padding:2px 12px 6px;font-size:11px;color:#888;flex-shrink:0}
+    .topbar p {
+      font-size: 10px;
+      opacity: .75;
+      margin-top: 1px
+    }
 
-/* list */
-.dlist{flex:1;overflow-y:auto;border-top:1px solid #e8eef4;min-height:0;-webkit-overflow-scrolling:touch}
-.ditem{padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8;font-size:13px;user-select:none}
-.ditem:hover,.ditem:active{background:#ebf3fb}
-.ditem.sel{background:#deeaf1}
-.dname{font-weight:500;flex:1;color:#222}
-.dnb{font-size:11px;color:#888;background:#f5f5f5;padding:2px 6px;border-radius:10px;margin-left:5px;flex-shrink:0}
-.ditem.sel .dnb{background:#bdd7ee;color:#1a3a5c}
-.dchk{color:#1a3a5c;font-size:14px;font-weight:700;margin-left:4px;flex-shrink:0}
-.hl{background:#fff3b0;font-weight:700;border-radius:2px}
-.no-res{padding:20px;text-align:center;color:#aaa;font-size:13px}
+    .badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
 
-/* chips */
-.chips-sec{flex-shrink:0;border-top:2px solid #e8eef4;display:flex;flex-direction:column;max-height:96px;min-height:32px}
-.chips-hdr{padding:4px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.chips-count{font-size:11px;font-weight:700;color:#2e74b5}
-.btn-clrall{font-size:11px;color:#c00;cursor:pointer;font-weight:600;border:none;background:none;padding:0;display:none}
-.chips-wrap{padding:0 8px 6px;display:flex;flex-wrap:wrap;gap:4px;overflow-y:auto}
-.chip{background:#1a3a5c;color:#fff;border-radius:16px;padding:3px 8px 3px 10px;font-size:11px;display:flex;align-items:center;gap:3px;max-width:180px}
-.chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chip-x{cursor:pointer;opacity:.7;font-size:12px;flex-shrink:0;border:none;background:none;color:#fff;padding:0;line-height:1}
-.chip-x:hover{opacity:1}
+    .badge {
+      background: rgba(255, 255, 255, .2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
 
-/* action bar */
-.actbar{flex-shrink:0;padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;border-top:2px solid #e8eef4}
+    /* ── DEALER BAR ── */
+    .dealerbar {
+      background: #fff;
+      border-bottom: 2px solid #d0dce8;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      flex-wrap: wrap
+    }
 
-/* ── RIGHT PANEL ── */
-.right{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+    .dealerbar label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a3a5c;
+      white-space: nowrap
+    }
 
-/* toolbar */
-.toolbar{background:#fff;padding:8px 16px;border-bottom:2px solid #d0dce8;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;gap:6px}
-.tleft{display:flex;align-items:center;gap:8px;min-width:0}
-.tright{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.res-title{font-size:13px;font-weight:700;color:#1a3a5c;white-space:nowrap}
-.res-sub{font-size:11px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+    .dealer-inp {
+      border: 2px solid #2e74b5;
+      border-radius: 7px;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a3a5c;
+      width: 200px;
+      min-width: 140px;
+      outline: none;
+      flex: 1
+    }
 
-/* hamburger (mobile) */
-.ham-btn{display:none;background:none;border:1px solid #2e74b5;border-radius:6px;padding:5px 8px;cursor:pointer;font-size:16px;color:#1a3a5c;flex-shrink:0}
+    .dealer-inp:focus {
+      border-color: #1a3a5c;
+      box-shadow: 0 0 0 3px rgba(46, 116, 181, .15)
+    }
 
-/* table scroll area */
-.tarea{flex:1;overflow:auto;padding:12px 14px;min-height:0;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-thead th{background:#1a3a5c;color:#fff;padding:9px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:center;white-space:nowrap;cursor:default}
-thead th.sort{cursor:pointer}
-thead th.sort:hover{background:#122840}
-.th-name{text-align:left}
-tbody tr{border-bottom:1px solid #edf2f7}
-tbody tr:hover{background:#f5f9fd}
-tbody tr:nth-child(even){background:#fafcff}
-tbody tr:nth-child(even):hover{background:#eef5fb}
-tbody td{padding:8px 10px;font-size:12px;text-align:center;vertical-align:middle}
-.td-name{text-align:left;font-weight:600;color:#1a3a5c;min-width:120px}
-.surf-tag{font-size:10px;color:#666;background:#f0f4f8;padding:2px 6px;border-radius:10px;display:inline-block}
-.td-num{font-family:monospace;color:#375623;font-weight:700;font-size:12px}
-.qty-inp{width:60px;padding:4px 6px;font-size:12px;border:1.5px solid #bdd7ee;border-radius:5px;text-align:center;outline:none;font-weight:600}
-.qty-inp:focus{border-color:#2e74b5}
-.row-acts{display:flex;justify-content:center;gap:4px}
-.ib{background:none;border:1px solid #d0dce8;border-radius:5px;cursor:pointer;padding:3px 7px;font-size:12px}
-.ib:hover{background:#ebf3fb;border-color:#2e74b5}
-.ib.del:hover{background:#fff0f0;border-color:#c00}
-.empty-state{padding:40px 20px;text-align:center;color:#aaa}
-.empty-state .ei{font-size:40px;margin-bottom:10px}
-.empty-state p{font-size:13px}
+    .dealer-inp::placeholder {
+      color: #aac4df;
+      font-weight: 400
+    }
 
-/* ── EXPORT BAR ── */
-.expbar{background:#fff;border-top:2px solid #d0dce8;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;gap:8px}
-.exp-info{font-size:12px;color:#666;min-width:0;flex:1}
-.exp-btns{display:flex;gap:8px;flex-shrink:0}
+    .dealer-hint {
+      font-size: 11px;
+      color: #888;
+      font-style: italic;
+      display: none
+    }
 
-/* ── BUTTONS ── */
-.btn{padding:7px 12px;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:5px;line-height:1;white-space:nowrap;touch-action:manipulation}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.b-blue{background:#1a3a5c;color:#fff}.b-blue:not([disabled]):hover{background:#122840}
-.b-green{background:#375623;color:#fff}.b-green:hover{background:#2a4019}
-.b-red{background:#c00;color:#fff}.b-red:hover{background:#900}
-.b-out{background:#fff;color:#1a3a5c;border:2px solid #2e74b5}.b-out:hover{background:#ebf3fb}
-.b-orange{background:#d97706;color:#fff}.b-orange:hover{background:#b45309}
+    /* ── MAIN BODY ── */
+    .body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden
+    }
 
-/* ── MODALS ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
-.overlay.open{display:flex}
-.modal{background:#fff;border-radius:12px;width:400px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
-.modal-hdr{background:#1a3a5c;color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
-.modal-hdr h3{font-size:15px;font-weight:700}
-.modal-x{background:none;border:none;color:#fff;cursor:pointer;font-size:20px;opacity:.7;line-height:1}
-.modal-x:hover{opacity:1}
-.modal-body{padding:18px}
-.mf{margin-bottom:14px}
-.mf label{display:block;font-size:11px;font-weight:700;color:#555;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
-.mf input{width:100%;padding:9px 12px;font-size:13px;border:1.5px solid #c8d8e8;border-radius:7px;outline:none}
-.mf input:focus{border-color:#2e74b5;box-shadow:0 0 0 3px rgba(46,116,181,.12)}
-.mf .hint{font-size:11px;color:#888;margin-top:3px}
-.modal-foot{padding:12px 18px;border-top:1px solid #e8eef4;display:flex;gap:8px;justify-content:flex-end}
-.confirm-box{background:#fff;border-radius:10px;padding:24px;width:300px;max-width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.confirm-box h3{font-size:16px;color:#1a3a5c;margin-bottom:8px}
-.confirm-box p{font-size:13px;color:#666;margin-bottom:18px}
-.confirm-btns{display:flex;gap:10px;justify-content:center}
+    /* ── LEFT PANEL ── */
+    .left {
+      width: 340px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 2px solid #d0dce8;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      transition: transform .25s ease
+    }
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:16px;right:16px;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;z-index:9999;transform:translateY(80px);opacity:0;transition:.3s ease;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);max-width:calc(100vw - 32px)}
-.toast.show{transform:translateY(0);opacity:1}
-.t-ok{background:#375623}.t-err{background:#c00}.t-warn{background:#d97706}.t-info{background:#1a3a5c}
+    .panel-hdr {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 9px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
 
-/* ── MOBILE OVERLAY for left panel ── */
-.left-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500}
-.left-overlay.open{display:block}
+    .panel-hdr .close-left {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      opacity: .8
+    }
 
-/* ── RESPONSIVE BREAKPOINTS ── */
+    .panel-hdr .close-left:hover {
+      opacity: 1
+    }
 
-/* Tablet: 600-900px — stack layout, left panel slides in */
-@media(max-width:900px){
-  .body{flex-direction:column;overflow:visible}
-  .left{
-    position:fixed;left:0;top:0;bottom:0;z-index:600;
-    width:320px;max-width:90vw;
-    transform:translateX(-100%);
-    box-shadow:4px 0 20px rgba(0,0,0,.2)
-  }
-  .left.open{transform:translateX(0)}
-  .panel-hdr .close-left{display:block}
-  .right{width:100%;flex:1;min-height:0}
-  .ham-btn{display:inline-flex;align-items:center;gap:5px}
-  .dealer-hint{display:none}
-}
+    /* search */
+    .srch-wrap {
+      padding: 10px 12px 4px;
+      flex-shrink: 0;
+      position: relative
+    }
 
-/* Small mobile: < 480px */
-@media(max-width:480px){
-  .topbar{padding:0 12px;min-height:48px}
-  .topbar h1{font-size:14px}
-  .badges{display:none}
-  .dealerbar{padding:6px 12px;gap:6px}
-  .dealerbar label{font-size:11px}
-  .dealer-inp{font-size:12px;padding:4px 8px}
-  .toolbar{padding:6px 12px}
-  .res-title{font-size:12px}
-  .res-sub{display:none}
-  .tarea{padding:8px}
-  .expbar{padding:8px 12px;gap:6px}
-  .exp-info{font-size:11px}
-  .btn{padding:6px 10px;font-size:11px}
-  .exp-btns{gap:6px}
-  thead th{padding:8px 8px;font-size:10px}
-  tbody td{padding:7px 8px;font-size:11px}
-  .qty-inp{width:52px;font-size:11px}
-}
-</style>
-</head>
-<body>
+    .srch-inp {
+      width: 100%;
+      padding: 8px 28px 8px 32px;
+      font-size: 13px;
+      border: 2px solid #2e74b5;
+      border-radius: 7px;
+      outline: none
+    }
 
-<div class="topbar">
-  <div><h1>&#127912; Design Manager</h1><p>Search &middot; Select &middot; Add/Edit &middot; Export PDF &amp; Excel</p></div>
-  <div class="badges"><span class="badge" id="bdgTotal">825 designs</span><span class="badge" id="bdgSel">0 selected</span></div>
-</div>
+    .srch-inp:focus {
+      border-color: #1a3a5c;
+      box-shadow: 0 0 0 3px rgba(46, 116, 181, .12)
+    }
 
-<div class="dealerbar">
-  <label>&#128100; Dealer Name:</label>
-  <input type="text" class="dealer-inp" id="dealerInp" placeholder="Enter dealer / party name..." autocomplete="off">
-  <span class="dealer-hint">Appears as heading in PDF &amp; Excel exports</span>
-</div>
+    .srch-ico {
+      position: absolute;
+      left: 22px;
+      top: 20px;
+      font-size: 13px;
+      pointer-events: none
+    }
 
-<div class="left-overlay" id="leftOverlay"></div>
-<div class="body">
-  <div class="left">
-    <div class="panel-hdr"><span>&#128269; Search &amp; Select</span><button class="close-left" id="closePanelBtn">&#x2715;</button></div>
-    <div class="srch-wrap">
-      <span class="srch-ico">&#128269;</span>
-      <input class="srch-inp" id="srchInp" type="text" placeholder="Type to filter: ab, brown, gloss..." autocomplete="off">
-      <button class="srch-clr" id="srchClr">&#x2715;</button>
-    </div>
-    <div class="srch-stats" id="srchStats">Showing all 825 designs</div>
-    <div class="dlist" id="dlist"></div>
-    <div class="chips-sec">
-      <div class="chips-hdr">
-        <span class="chips-count" id="chipsCount">0 selected</span>
-        <button class="btn-clrall" id="btnClrAll">&#x2715; Clear All</button>
-      </div>
-      <div class="chips-wrap" id="chipsWrap"></div>
-    </div>
-    <div class="actbar">
-      <button class="btn b-blue" id="showBtn" disabled>&#9654; SHOW</button>
-      <button class="btn b-green" id="addBtn">&#xff0b; Add Design</button>
-      <button class="btn b-out" id="selAllBtn">&#9745; Select All</button>
-    </div>
-  </div>
+    .srch-clr {
+      position: absolute;
+      right: 22px;
+      top: 18px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #999;
+      display: none;
+      background: none;
+      border: none;
+      padding: 2px;
+      line-height: 1
+    }
 
-  <div class="right">
-    <div class="toolbar">
-      <div class="tleft">
-        <button class="ham-btn" id="hamBtn" title="Open search panel">&#9776; Designs</button>
-        <span class="res-title" id="resTitle">Design Details</span>
-        <span class="res-sub" id="resSub">Select designs and click SHOW</span>
-      </div>
-      <div class="tright">
-        <button class="btn b-red" id="rmSelBtn" style="display:none">&#128465; Remove Selected</button>
-      </div>
-    </div>
-    <div class="tarea">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:36px"><input type="checkbox" id="allCb" title="Select all"></th>
-            <th style="width:40px" class="sort" data-col="idx">#</th>
-            <th class="th-name sort" data-col="n">Design Name</th>
-            <th class="sort" data-col="s">Surface</th>
-            <th class="sort" data-col="nb">Numbar</th>
-            <th style="width:80px">Qty</th>
-            <th style="width:88px">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-    <div class="expbar">
-      <span class="exp-info" id="expInfo">No items to export</span>
-      <div class="exp-btns">
-        <button class="btn b-out" id="xlBtn" disabled>&#128202; Excel</button>
-        <button class="btn b-orange" id="pdfBtn" disabled>&#128196; PDF</button>
-      </div>
-    </div>
-  </div>
-</div>
+    .srch-stats {
+      padding: 2px 12px 6px;
+      font-size: 11px;
+      color: #888;
+      flex-shrink: 0
+    }
 
-<div class="overlay" id="modalOv">
-  <div class="modal">
-    <div class="modal-hdr"><h3 id="modalTitle">Add New Design</h3><button class="modal-x" id="modalX">&#x2715;</button></div>
-    <div class="modal-body">
-      <div class="mf"><label>Design Name *</label><input id="mName" type="text" placeholder="e.g. AURORA GOLD" autocomplete="off"><div class="hint">Saved in uppercase</div></div>
-      <div class="mf"><label>Surface *</label><input id="mSurf" type="text" placeholder="e.g. GLOSY, MATT, CRV - 1" autocomplete="off"></div>
-      <div class="mf"><label>Numbar *</label><input id="mNum" type="text" placeholder="e.g. 2299" autocomplete="off"></div>
-    </div>
-    <div class="modal-foot"><button class="btn b-out" id="modalCancel">Cancel</button><button class="btn b-green" id="modalSave">&#128190; Save</button></div>
-  </div>
-</div>
+    /* list */
+    .dlist {
+      flex: 1;
+      overflow-y: auto;
+      border-top: 1px solid #e8eef4;
+      min-height: 0;
+      -webkit-overflow-scrolling: touch
+    }
 
-<div class="overlay" id="confOv">
-  <div class="confirm-box">
-    <h3 id="confTitle">Confirm</h3><p id="confMsg">Are you sure?</p>
-    <div class="confirm-btns"><button class="btn b-out" id="confCancel">Cancel</button><button class="btn b-red" id="confOk">Delete</button></div>
-  </div>
-</div>
+    .ditem {
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f0f4f8;
+      font-size: 13px;
+      user-select: none
+    }
 
-<div class="toast" id="toastEl"></div>
+    .ditem:hover,
+    .ditem:active {
+      background: #ebf3fb
+    }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script>
-/* All 825 designs &mdash; non-ASCII chars encoded as \uXXXX so file works from file:// */
-var SEED = [
-  {n:'ANTI SKY',s:'GLOSY -',nb:'2001'},
-  {n:'ANTICO CREMA',s:'GLOSY -',nb:'2002'},
-  {n:'ANTICO IVORY',s:'GLOSY -',nb:'2003'},
-  {n:'ANTISKY WHITE',s:'GLOSY -',nb:'2004'},
-  {n:'ARIANA BEIGE',s:'GLOSY -',nb:'2005'},
-  {n:'ARMANO BEIGE',s:'GLOSY -',nb:'2006'},
-  {n:'ARMANO BROWN',s:'GLOSY -',nb:'2007'},
-  {n:'ARMANO CREMA',s:'GLOSY -',nb:'2008'},
-  {n:'ARMANO LIGHT',s:'GLOSY -',nb:'2009'},
-  {n:'AURORA IVORY',s:'GLOSY -',nb:'2010'},
-  {n:'BRAVE BEIGE',s:'GLOSY -',nb:'2011'},
-  {n:'BURBERY BEIGE',s:'GLOSY -',nb:'2012'},
-  {n:'CANBERA BIANCO',s:'GLOSY -',nb:'2013'},
-  {n:'CANBERA IVORY',s:'GLOSY -',nb:'2014'},
-  {n:'CARDOSO BIANCO',s:'GLOSY -',nb:'2015'},
-  {n:'CIRCUS BEIGE',s:'GLOSY -',nb:'2016'},
-  {n:'CIRCUS GREY',s:'GLOSY -',nb:'2017'},
-  {n:'CIRCUS IVORY',s:'GLOSY -',nb:'2018'},
-  {n:'CLOU BEIGE',s:'GLOSY -',nb:'2019'},
-  {n:'CLOUD BROWN',s:'GLOSY -',nb:'2020'},
-  {n:'CRESTOLA CREMA',s:'GLOSY -',nb:'2021'},
-  {n:'DAINO GRIS',s:'GLOSY -',nb:'2022'},
-  {n:'DAMESTA GREY',s:'GLOSY -',nb:'2023'},
-  {n:'DEVCI GREY',s:'GLOSY -',nb:'2024'},
-  {n:'DEVCI GRIS',s:'GLOSY -',nb:'2025'},
-  {n:'ETOILE CREMA',s:'GLOSY -',nb:'2026'},
-  {n:'ETOILE BROWN',s:'GLOSY -',nb:'2027'},
-  {n:'ETOILE GREY',s:'GLOSY -',nb:'2028'},
-  {n:'ETOILE LIGHT GREY',s:'GLOSY -',nb:'2029'},
-  {n:'ETOILE NATURAL',s:'GLOSY -',nb:'2030'},
-  {n:'ESPERDA GREY',s:'GLOSY -',nb:'2031'},
-  {n:'FENDER BROWN',s:'GLOSY -',nb:'2032'},
-  {n:'FENDER LIGHT',s:'GLOSY -',nb:'2033'},
-  {n:'FENDER NATURAL',s:'GLOSY -',nb:'2034'},
-  {n:'FLAVIA',s:'GLOSY -',nb:'2035'},
-  {n:'FLAVIA GREY',s:'GLOSY -',nb:'2036'},
-  {n:'HORDIX BROWN',s:'GLOSY -',nb:'2037'},
-  {n:'HORDIX GREY',s:'GLOSY -',nb:'2038'},
-  {n:'IMPERIAL GREY',s:'GLOSY -',nb:'2039'},
-  {n:'LISTONI BEIGE',s:'GLOSY -',nb:'2040'},
-  {n:'LISTONI  BROWN',s:'GLOSY -',nb:'2041'},
-  {n:'LISTONI  CREMA',s:'GLOSY -',nb:'2042'},
-  {n:'LYON LIGHT',s:'GLOSY -',nb:'2043'},
-  {n:'MISTERO CHOCO',s:'GLOSY -',nb:'2044'},
-  {n:'MISTERO  LIGHT',s:'GLOSY -',nb:'2045'},
-  {n:'MISTERO NATURAL',s:'GLOSY -',nb:'2046'},
-  {n:'MISTERO  BROWN',s:'GLOSY -',nb:'2047'},
-  {n:'MOCHA BROWN',s:'GLOSY -',nb:'2048'},
-  {n:'MOCHA GREY',s:'GLOSY -',nb:'2049'},
-  {n:'MOCHA LIGHT GREY',s:'GLOSY -',nb:'2050'},
-  {n:'MOZZAICO BIANCO',s:'GLOSY -',nb:'2051'},
-  {n:'MOZZAICO GREY',s:'GLOSY -',nb:'2052'},
-  {n:'NORDIC GREY',s:'GLOSY -',nb:'2053'},
-  {n:'NORDIC OLIVE',s:'GLOSY -',nb:'2054'},
-  {n:'ORACLE GRIS',s:'GLOSY -',nb:'2055'},
-  {n:'QUARTZ BROWN',s:'GLOSY -',nb:'2056'},
-  {n:'QUARTZ CREMA',s:'GLOSY -',nb:'2057'},
-  {n:'REGAL TRAVENTINO GREY',s:'GLOSY -',nb:'2058'},
-  {n:'REYCERA GREY',s:'GLOSY -',nb:'2059'},
-  {n:'REYCERA GRIS',s:'GLOSY -',nb:'2060'},
-  {n:'REYCERA  RASE',s:'GLOSY -',nb:'2061'},
-  {n:'RODUM BROWN',s:'GLOSY -',nb:'2062'},
-  {n:'RODUM NATURAL',s:'GLOSY -',nb:'2063'},
-  {n:'RODUM NATURAL DARK',s:'GLOSY -',nb:'2064'},
-  {n:'SIERRA BEIGE',s:'GLOSY -',nb:'2065'},
-  {n:'SIERRA BROWN',s:'GLOSY -',nb:'2066'},
-  {n:'SOFT BROWN',s:'GLOSY -',nb:'2067'},
-  {n:'SOFT DARK GREY',s:'GLOSY -',nb:'2068'},
-  {n:'SOFT LIGHT GREY',s:'GLOSY -',nb:'2069'},
-  {n:'ALBASTRO NATURAL',s:'GLOSY -',nb:'2075'},
-  {n:'ARABESCATO CREAM',s:'GLOSY -',nb:'2076'},
-  {n:'ARABESCATO  BROWN',s:'GLOSY -',nb:'2077'},
-  {n:'ARKOSE',s:'GLOSY -',nb:'2078'},
-  {n:'ARMANI LIGHT',s:'GLOSY -',nb:'2079'},
-  {n:'ARMANI NERO',s:'GLOSY -',nb:'2080'},
-  {n:'ASIA SILVER',s:'GLOSY -',nb:'2081'},
-  {n:'ARABESCATO NATURAL',s:'GLOSY -',nb:'2082'},
-  {n:'BOTTOCHINO BEIGE',s:'GLOSY -',nb:'2083'},
-  {n:'BRASIL GREY',s:'GLOSY -',nb:'2084'},
-  {n:'BRAWLEY LIGHT',s:'GLOSY -',nb:'2085'},
-  {n:'BROKEN BRECIA',s:'GLOSY -',nb:'2086'},
-  {n:'CALCATTA AQUA',s:'GLOSY -',nb:'2087'},
-  {n:'CALCATTA BLUE',s:'GLOSY -',nb:'2088'},
-  {n:'CAMBRIA BEIGE',s:'GLOSY -',nb:'2089'},
-  {n:'CLASSIC BRECCIA',s:'GLOSY -',nb:'2090'},
-  {n:'COLONIAL CHOCO',s:'GLOSY -',nb:'2091'},
-  {n:'CORAL ONYX',s:'GLOSY -',nb:'2092'},
-  {n:'CRISTAM BEIGE',s:'GLOSY -',nb:'2093'},
-  {n:'CASTON BLACK',s:'GLOSY -',nb:'2094'},
-  {n:'DARK SPIDER',s:'GLOSY -',nb:'2095'},
-  {n:'DYNA PEARL',s:'GLOSY -',nb:'2096'},
-  {n:'ELECTRA DARK',s:'GLOSY -',nb:'2097'},
-  {n:'ELECTRA LIGHT',s:'GLOSY -',nb:'2098'},
-  {n:'ELEGANT CREMA',s:'GLOSY -',nb:'2099'},
-  {n:'EXOTIC AMPRADOR',s:'GLOSY -',nb:'2100'},
-  {n:'ELICE CHOCO',s:'GLOSY -',nb:'2101'},
-  {n:'FABERO CHOCO',s:'GLOSY -',nb:'2102'},
-  {n:'FABERO GREY',s:'GLOSY -',nb:'2103'},
-  {n:'FANTASY BLUE',s:'GLOSY -',nb:'2104'},
-  {n:'GLACIER ONYX',s:'GLOSY -',nb:'2105'},
-  {n:'HALLEY DARK',s:'GLOSY -',nb:'2106'},
-  {n:'HAMLET BROWN',s:'GLOSY -',nb:'2107'},
-  {n:'HAWANA NATURAL',s:'GLOSY -',nb:'2108'},
-  {n:'IMPERIAL DYNA BLUE',s:'GLOSY -',nb:'2109'},
-  {n:'IMPERIAL DYNA BEIGE',s:'GLOSY -',nb:'2110'},
-  {n:'JUPITER MULTY',s:'GLOSY -',nb:'2111'},
-  {n:'LEVIS MULTY',s:'GLOSY -',nb:'2112'},
-  {n:'LIGHT MARFIL',s:'GLOSY -',nb:'2113'},
-  {n:'LIZARD COFFEE',s:'GLOSY -',nb:'2114'},
-  {n:'MARFIL BEIGE',s:'GLOSY -',nb:'2115'},
-  {n:'MARBO NATURAL',s:'GLOSY -',nb:'2116'},
-  {n:'NATURAL ONYX SNOW',s:'GLOSY -',nb:'2117'},
-  {n:'OCEAN BEIGE',s:'GLOSY -',nb:'2118'},
-  {n:'ONYX INFERNO',s:'GLOSY -',nb:'2119'},
-  {n:'ONYX VANILA',s:'GLOSY -',nb:'2120'},
-  {n:'OPERA AZUL',s:'GLOSY -',nb:'2121'},
-  {n:'OYSTER BROWN',s:'GLOSY -',nb:'2122'},
-  {n:'AREL DOVE',s:'GLOSY -',nb:'2137'},
-  {n:'CINERER ONYX',s:'GLOSY -',nb:'2138'},
-  {n:'CORD MARFIL',s:'GLOSY -',nb:'2139'},
-  {n:'DOLOMITE ONYX',s:'GLOSY -',nb:'2140'},
-  {n:'LUSTROUS MULTY',s:'GLOSY -',nb:'2141'},
-  {n:'MICHENGELO',s:'GLOSY -',nb:'2142'},
-  {n:'PARIS DREAMY',s:'GLOSY -',nb:'2143'},
-  {n:'PERADISO GOLD',s:'GLOSY -',nb:'2144'},
-  {n:'PIATRA BROWN',s:'GLOSY -',nb:'2145'},
-  {n:'PIATRA GREY',s:'GLOSY -',nb:'2146'},
-  {n:'SARONA NATURAL',s:'GLOSY -',nb:'2147'},
-  {n:'SILVER GRIS',s:'GLOSY -',nb:'2148'},
-  {n:'SILVER ROOT',s:'GLOSY -',nb:'2149'},
-  {n:'SMOKY HAZEL',s:'GLOSY -',nb:'2150'},
-  {n:'SMOKY ROSE',s:'GLOSY -',nb:'2151'},
-  {n:'STARRY CHOCO',s:'GLOSY -',nb:'2152'},
-  {n:'STARRY CREMA',s:'GLOSY -',nb:'2153'},
-  {n:'STARRY GREY',s:'GLOSY -',nb:'2154'},
-  {n:'STARRY SILVER',s:'GLOSY -',nb:'2155'},
-  {n:'TILET MARBLE',s:'GLOSY -',nb:'2156'},
-  {n:'TRUST ONYX',s:'GLOSY -',nb:'2157'},
-  {n:'TUNDRA BEIGE',s:'GLOSY -',nb:'2158'},
-  {n:'TUNDRA CREMA',s:'GLOSY -',nb:'2159'},
-  {n:'BRANCO WHITE',s:'GLOSY -',nb:'2160'},
-  {n:'ICE DINOVA',s:'GLOSY -',nb:'2161'},
-  {n:'NAVELLE SILK',s:'GLOSY -',nb:'2162'},
-  {n:'SILVIA GOLD',s:'GLOSY -',nb:'2163'},
-  {n:'SOFITA REY',s:'GLOSY -',nb:'2164'},
-  {n:'STATUARIO CARRARA',s:'GLOSY -',nb:'2165'},
-  {n:'STATUARIO ENFOLD',s:'GLOSY -',nb:'2166'},
-  {n:'STATUARIO SILIVIA',s:'GLOSY -',nb:'2167'},
-  {n:'STATUARIO VIOLA',s:'GLOSY -',nb:'2168 A'},
-  {n:'ALEX WHITE',s:'GLOSY -',nb:'2168'},
-  {n:'ANGELO SATUARIO',s:'GLOSY -',nb:'2169'},
-  {n:'ELITE SATUARIO',s:'GLOSY -',nb:'2170'},
-  {n:'HIMALAYA WHITE',s:'GLOSY -',nb:'2171'},
-  {n:'HONEY SATUARIO',s:'GLOSY -',nb:'2172'},
-  {n:'NIVIA WHITE',s:'GLOSY -',nb:'2173'},
-  {n:'ONYX CLOWDY',s:'GLOSY -',nb:'2174'},
-  {n:'PEARL ONYX GREY',s:'GLOSY -',nb:'2175'},
-  {n:'PLATINA WHITE',s:'GLOSY -',nb:'2176'},
-  {n:'ROYAL SATUARIO',s:'GLOSY -',nb:'2177'},
-  {n:'SATUARIO FANTA',s:'GLOSY -',nb:'2178'},
-  {n:'SATUARIO  NATUARAL',s:'GLOSY -',nb:'2179'},
-  {n:'SERENIA',s:'GLOSY -',nb:'2180'},
-  {n:'SHINE SATUARIO',s:'GLOSY -',nb:'2181'},
-  {n:'ANTIQUE SATUARIO',s:'GLOSY -',nb:'2182'},
-  {n:'SKY ONYX',s:'GLOSY -',nb:'2183'},
-  {n:'SATUARIO VIVIAN',s:'GLOSY -',nb:'2184'},
-  {n:'TIGER ONYX',s:'GLOSY -',nb:'2185'},
-  {n:'ATLANTIC WHITE',s:'GLOSY -',nb:'2186'},
-  {n:'ANTRARCITA CREMA',s:'GLOSY -',nb:'2187'},
-  {n:'ANTRARCITA  GREY',s:'GLOSY -',nb:'2188'},
-  {n:'CALACATTA VIOLA',s:'GLOSY -',nb:'2189'},
-  {n:'CARLO ONYX BEIGE',s:'GLOSY -',nb:'2190'},
-  {n:'CARLO ONYX  ICE',s:'GLOSY -',nb:'2191'},
-  {n:'CARLO ONYX NATURAL',s:'GLOSY -',nb:'2192'},
-  {n:'CUPAR WHITE',s:'GLOSY -',nb:'2193'},
-  {n:'HAWAI WHITE',s:'GLOSY -',nb:'2194'},
-  {n:'OLGA ONYX BIANCO',s:'GLOSY -',nb:'2195'},
-  {n:'OLGA ONYX  GRIES',s:'GLOSY -',nb:'2196'},
-  {n:'PRISMATIC STATUARIO',s:'GLOSY -',nb:'2197'},
-  {n:'SWISS STATUARIO',s:'GLOSY -',nb:'2198'},
-  {n:'TROPIC GREY',s:'GLOSY -',nb:'2205'},
-  {n:'TROPIC WHITE',s:'GLOSY -',nb:'2206'},
-  {n:'BERLIN NATURAL',s:'GLOSY -',nb:'2207'},
-  {n:'MUST STATUARIO',s:'GLOSY -',nb:'2208'},
-  {n:'CASSINI CARRARA',s:'GLOSY -',nb:'2209'},
-  {n:'CASSINI CARRARA GREY',s:'GLOSY -',nb:'2210'},
-  {n:'ROMAN STATUARIO',s:'GLOSY -',nb:'2211'},
-  {n:'WHITE BLUE',s:'GLOSY -',nb:'2212'},
-  {n:'WILLIM GREY LIGHT',s:'GLOSY -',nb:'2213'},
-  {n:'ALTIMO WHITE',s:'EN - GL -',nb:'1001'},
-  {n:'ANTIVA THAMOS',s:'EN - GL -',nb:'1002'},
-  {n:'ARNO ANTIC',s:'EN - GL -',nb:'1003'},
-  {n:'ATTACHE LAVISH',s:'EN - GL -',nb:'1004'},
-  {n:'BIANCO ANGELICA',s:'EN - GL -',nb:'1005'},
-  {n:'BORGIA NATURAL',s:'EN - GL -',nb:'1006'},
-  {n:'BRECCIA AZURE',s:'EN - GL -',nb:'1007'},
-  {n:'BRECCIA HUDSON',s:'EN - GL -',nb:'1008'},
-  {n:'BRERA PULIDO',s:'EN - GL -',nb:'1009'},
-  {n:'BITTOCHINO NATURAL',s:'EN - GL -',nb:'1010'},
-  {n:'CARIBBEAN',s:'EN - GL -',nb:'1011'},
-  {n:'CARPEIA GOLD',s:'EN - GL -',nb:'1012'},
-  {n:'CORCHIA GOLD',s:'EN - GL -',nb:'1013'},
-  {n:'COSIMA CASSINI',s:'EN - GL -',nb:'1014'},
-  {n:'CRSOLA ONYX',s:'EN - GL -',nb:'1015'},
-  {n:'CARRARA WHITE',s:'EN - GL -',nb:'1016'},
-  {n:'CASELONIA BLACK',s:'EN - GL -',nb:'1017'},
-  {n:'CASELONIA  BLUE',s:'EN - GL -',nb:'1018'},
-  {n:'CLASSIC DYNA BEIGE',s:'EN - GL -',nb:'1019'},
-  {n:'DOMUS TRAVERTINO',s:'EN - GL -',nb:'1020'},
-  {n:'EVOCA GREY',s:'EN - GL -',nb:'1021'},
-  {n:'FENIX  ONYX',s:'EN - GL -',nb:'1022'},
-  {n:'FOREST SATUARIO',s:'EN - GL -',nb:'1023'},
-  {n:'FOREVER WHITE',s:'EN - GL -',nb:'1024'},
-  {n:'GRESIA CARRARA',s:'EN - GL -',nb:'1025'},
-  {n:'HIMENTO CALACATTA',s:'EN - GL -',nb:'1026'},
-  {n:'JORDEN GREY',s:'EN - GL -',nb:'1027'},
-  {n:'LASA GOLD ONYX',s:'EN - GL -',nb:'1028'},
-  {n:'LORENT GREY',s:'EN - GL -',nb:'1029'},
-  {n:'LORENT GREY LIGHT',s:'EN - GL -',nb:'1030'},
-  {n:'MODICO GREY',s:'EN - GL -',nb:'1031'},
-  {n:'MIST WHITE',s:'EN - GL -',nb:'1032'},
-  {n:'MARMOLA NATURAL',s:'EN - GL -',nb:'1033'},
-  {n:'NAVONA BEIGE',s:'EN - GL -',nb:'1034'},
-  {n:'NAVONA  GREY',s:'EN - GL -',nb:'1035'},
-  {n:'NUO ONYX GREY',s:'EN - GL -',nb:'1036'},
-  {n:'NATURAL SLATE BEIGE',s:'EN - GL -',nb:'1037'},
-  {n:'NEVADA BEIGE',s:'EN - GL -',nb:'1038'},
-  {n:'ONICA AMBAR',s:'EN - GL -',nb:'1039'},
-  {n:'ONYX BRUCOLI',s:'EN - GL -',nb:'1040'},
-  {n:'OPTICAL WHITE',s:'EN - GL -',nb:'1041'},
-  {n:'PARADISO BRECCIA',s:'EN - GL -',nb:'1042'},
-  {n:'PARAGON GOLD',s:'EN - GL -',nb:'1043'},
-  {n:'PEROLA CLASSIC BEIGE',s:'EN - GL -',nb:'1044'},
-  {n:'PULPIS  BRIGE',s:'EN - GL -',nb:'1045'},
-  {n:'PULPIS  BRIGE DARK',s:'EN - GL -',nb:'1046'},
-  {n:'PULPIS  IVORY',s:'EN - GL -',nb:'1047'},
-  {n:'ROSSALIA BOTINO',s:'EN - GL -',nb:'1048'},
-  {n:'SAJALIN ONYX',s:'EN - GL -',nb:'1049'},
-  {n:'STATUARIO VENETIAN',s:'EN - GL -',nb:'1050'},
-  {n:'SONATA  STATUARIO',s:'EN - GL -',nb:'1051'},
-  {n:'TUSCANI ONYX',s:'EN - GL -',nb:'1052'},
-  {n:'VIENA GOLD',s:'EN - GL -',nb:'1053'},
-  {n:'VILLA LUX PEARL',s:'EN - GL -',nb:'1054'},
-  {n:'VISIONER BEIGE',s:'EN - GL -',nb:'1055'},
-  {n:'VISIONER  BROWN',s:'EN - GL -',nb:'1056'},
-  {n:'VISIONER GREY',s:'EN - GL -',nb:'1057'},
-  {n:'ADVIK BIANCO',s:'EN - GL -',nb:'1058'},
-  {n:'ADVIK CREMA',s:'EN - GL -',nb:'1059'},
-  {n:'ADVIK  GREY',s:'EN - GL -',nb:'1060'},
-  {n:'ADVIK TAUPE',s:'EN - GL -',nb:'1061'},
-  {n:'CRUX WHITE',s:'EN - GL -',nb:'1062'},
-  {n:'DIAZ AQUA',s:'EN - GL -',nb:'1063'},
-  {n:'DIAZ GREY',s:'EN - GL -',nb:'1064'},
-  {n:'DORNIX BLANCO',s:'EN - GL -',nb:'1065'},
-  {n:'DORNIX BROWN',s:'EN - GL -',nb:'1066'},
-  {n:'DORNIX CREMA',s:'EN - GL -',nb:'1067'},
-  {n:'DORNIX GREY',s:'EN - GL -',nb:'1068'},
-  {n:'SUKANI WHITE',s:'EN - GL -',nb:'1069'},
-  {n:'WETLAND LITE',s:'EN - GL -',nb:'1070'},
-  {n:'ZOTICA BROWN',s:'EN - GL -',nb:'1071'},
-  {n:'ZOTICA  GREY',s:'EN - GL -',nb:'1072'},
-  {n:'ZOTICA YELLO',s:'EN - GL -',nb:'1073'},
-  {n:'AMAZONE BROWN',s:'GR -',nb:'3001'},
-  {n:'ASTROID CHOCO',s:'GR -',nb:'3002'},
-  {n:'BLACK BASEL',s:'GR -',nb:'3003'},
-  {n:'COZY BLUE',s:'GR -',nb:'3004'},
-  {n:'COZY  CHOCO',s:'GR -',nb:'3005'},
-  {n:'CRYSTAL BROWN',s:'GR -',nb:'3006'},
-  {n:'CRYSTAL IVORY',s:'GR -',nb:'3007'},
-  {n:'DOLIC BLUE',s:'GR -',nb:'3008'},
-  {n:'DOLIC  GREY',s:'GR -',nb:'3009'},
-  {n:'GLOBLE BROWN',s:'GR -',nb:'3010'},
-  {n:'GLOBLE CREMA',s:'GR -',nb:'3011'},
-  {n:'GRANITE BLUE',s:'GR -',nb:'3012'},
-  {n:'GRANITE BROWN',s:'GR -',nb:'3013'},
-  {n:'HEXA GREY',s:'GR -',nb:'3014'},
-  {n:'LISOBA BEIGE',s:'GR -',nb:'3015'},
-  {n:'LISOBA GREY',s:'GR -',nb:'3016'},
-  {n:'LUCIO BLUE',s:'GR -',nb:'3017'},
-  {n:'LUCIO  BROWN',s:'GR -',nb:'3018'},
-  {n:'LUCIO  SMOKE',s:'GR -',nb:'3019'},
-  {n:'MEGA BLACK',s:'GR -',nb:'3020'},
-  {n:'MEGA BROWN',s:'GR -',nb:'3021'},
-  {n:'MOSCHINO BLACK',s:'GR -',nb:'3022'},
-  {n:'NEPTUNO NATURAL',s:'GR -',nb:'3023'},
-  {n:'OKIYA BROWN',s:'GR -',nb:'3024'},
-  {n:'PLATINUM CREMA',s:'GR -',nb:'3025'},
-  {n:'ROSSO RIVER',s:'GR -',nb:'3026'},
-  {n:'STONE BEIGE',s:'GR -',nb:'3027'},
-  {n:'STONE SMOKE',s:'GR -',nb:'3028'},
-  {n:'TROPIZ BLUE',s:'GR -',nb:'3029'},
-  {n:'TROPIZ  BROWN',s:'GR -',nb:'3030'},
-  {n:'CHAIN WOOD',s:'3 D -',nb:'9001'},
-  {n:'FLOWERS WHITE',s:'3 D -',nb:'9002'},
-  {n:'GOLD DECORE',s:'3 D -',nb:'9003'},
-  {n:'GOLDEN WOOD',s:'3 D -',nb:'9004'},
-  {n:'GREY WAVY STRIPS',s:'3 D -',nb:'9005'},
-  {n:'ILLUSION BLACK',s:'3 D -',nb:'9006'},
-  {n:'METAL WHITE',s:'3 D -',nb:'9007'},
-  {n:'METRIX ZIBRA WHITE',s:'3 D -',nb:'9008'},
-  {n:'MULTI WHATER DROP',s:'3 D -',nb:'9009'},
-  {n:'NATURAL FLOWER',s:'3 D -',nb:'9010'},
-  {n:'PENTAGONS GREY',s:'3 D -',nb:'9011'},
-  {n:'SOFIA DECORE',s:'3 D -',nb:'9012'},
-  {n:'SOFT FLOWER',s:'3 D -',nb:'9013'},
-  {n:'STICK LIGHTER',s:'3 D -',nb:'9014'},
-  {n:'TRIANGLE GREY',s:'3 D -',nb:'9015'},
-  {n:'TROPICAL LEAVES',s:'3 D -',nb:'9016'},
-  {n:'WHITE FLORAL',s:'3 D -',nb:'9017'},
-  {n:'BRECCIA AURORA',s:'BK -',nb:'7001'},
-  {n:'CAMRON BEIGE',s:'BK -',nb:'7002'},
-  {n:'FORTUNE BEIGE',s:'BK -',nb:'7003'},
-  {n:'KEROS WHITE',s:'BK -',nb:'7004'},
-  {n:'MARVERIC GREY',s:'BK -',nb:'7005'},
-  {n:'MAXIMUS STATUARIO',s:'BK -',nb:'7006'},
-  {n:'MELIBERA GREY',s:'BK -',nb:'7007'},
-  {n:'NATURAL EMPIRE',s:'BK -',nb:'7008'},
-  {n:'ONYX ICE',s:'BK -',nb:'7009'},
-  {n:'ONYX JADE',s:'BK -',nb:'7010'},
-  {n:'ORGEN WHITE',s:'BK -',nb:'7011'},
-  {n:'REGAL STATUARIO CLASSIC',s:'BK -',nb:'7012'},
-  {n:'SPARKLE NATURAL',s:'BK -',nb:'7013'},
-  {n:'TORONTO BEIGE',s:'BK -',nb:'7014'},
-  {n:'TROPICAL BLUE',s:'BK -',nb:'7015'},
-  {n:'PULPINO GREY',s:'COL.FIC -',nb:'8101'},
-  {n:'PULPINO CLOUD',s:'COL.FIC -',nb:'8102'},
-  {n:'PULPINO SILVER',s:'COL.FIC -',nb:'8103'},
-  {n:'PULPINO BROWN',s:'COL.FIC -',nb:'8104'},
-  {n:'PULPINO  NUT',s:'COL.FIC -',nb:'8105'},
-  {n:'PULPINO SEPIA',s:'COL.FIC -',nb:'8106'},
-  {n:'PULPINO CREEMA',s:'COL.FIC -',nb:'8107'},
-  {n:'PULPINO SAFFRON',s:'COL.FIC -',nb:'8108'},
-  {n:'PULPINO MINT',s:'COL.FIC -',nb:'8109'},
-  {n:'PULPINO AQUA',s:'COL.FIC -',nb:'8110'},
-  {n:'PULPINO BLUE',s:'COL.FIC -',nb:'8111'},
-  {n:'PULPINO BIANCO',s:'COL.FIC -',nb:'8112'},
-  {n:'ALICANTE - LT/DK/D\u00c9COR',s:'D\u00c9COR -',nb:'8001'},
-  {n:'ANANT- LT+ D\u00c9COR',s:'D\u00c9COR -',nb:'8002'},
-  {n:'ARTEX',s:'D\u00c9COR -',nb:'8003'},
-  {n:'ARYAN',s:'D\u00c9COR -',nb:'8004'},
-  {n:'BREEZA D\u00c9COR',s:'D\u00c9COR -',nb:'8005'},
-  {n:'CANICA',s:'D\u00c9COR -',nb:'8006'},
-  {n:'CELESTINE',s:'D\u00c9COR -',nb:'8007'},
-  {n:'CHEAPEST',s:'D\u00c9COR -',nb:'8008'},
-  {n:'CORNET',s:'D\u00c9COR -',nb:'8009'},
-  {n:'DAHLIA',s:'D\u00c9COR -',nb:'8010'},
-  {n:'DALLES',s:'D\u00c9COR -',nb:'8011'},
-  {n:'EBON',s:'D\u00c9COR -',nb:'8012'},
-  {n:'ENAMEL  GRIS',s:'D\u00c9COR -',nb:'8013'},
-  {n:'KITO',s:'D\u00c9COR -',nb:'8014'},
-  {n:'LAVACHE',s:'D\u00c9COR -',nb:'8015'},
-  {n:'MAHOGANY',s:'D\u00c9COR -',nb:'8016'},
-  {n:'MOKSHA D\u00c9COR',s:'D\u00c9COR -',nb:'8017'},
-  {n:'MOORISH',s:'D\u00c9COR -',nb:'8018'},
-  {n:'NARGEES',s:'D\u00c9COR -',nb:'8019'},
-  {n:'SQUARE TONE',s:'D\u00c9COR -',nb:'8020'},
-  {n:'PASHMINA',s:'D\u00c9COR -',nb:'8021'},
-  {n:'RECTUS GRIS',s:'D\u00c9COR -',nb:'8022'},
-  {n:'SPARKLE AZURE',s:'D\u00c9COR -',nb:'8023'},
-  {n:'SWDEN',s:'D\u00c9COR -',nb:'8024'},
-  {n:'ALASKA BEIGE',s:'MATT  -',nb:'4001'},
-  {n:'AMERICAN WOOD BEIGE',s:'MATT  -',nb:'4002'},
-  {n:'AMERICAN WOOD GREY',s:'MATT  -',nb:'4003'},
-  {n:'AMERICAN WOOD NATURAL',s:'MATT  -',nb:'4004'},
-  {n:'ARTISTIC BEIGE',s:'MATT  -',nb:'4005'},
-  {n:'ASPEN BROWN',s:'MATT  -',nb:'4006'},
-  {n:'ASPEN GREY',s:'MATT  -',nb:'4007'},
-  {n:'ASPEN SMOKE',s:'MATT  -',nb:'4008'},
-  {n:'BELLY WOOD BROWN',s:'MATT  -',nb:'4009'},
-  {n:'CAIRO BEIGE',s:'MATT  -',nb:'4010'},
-  {n:'CAIRO BROWN',s:'MATT  -',nb:'4011'},
-  {n:'CAIRO GREY',s:'MATT  -',nb:'4012'},
-  {n:'CEMENTO COPPER',s:'MATT  -',nb:'4013'},
-  {n:'CEMENTO COPPER GREY',s:'MATT  -',nb:'4014'},
-  {n:'CEMENTO GRAPHITE',s:'MATT  -',nb:'4015'},
-  {n:'CEMENTO  GREY',s:'MATT  -',nb:'4016'},
-  {n:'CEMENTO SMOKE',s:'MATT  -',nb:'4017'},
-  {n:'DALLSA BEIGE',s:'MATT  -',nb:'4018'},
-  {n:'DALLSA  BLACK',s:'MATT  -',nb:'4019'},
-  {n:'DALLSA  BROWN',s:'MATT  -',nb:'4020'},
-  {n:'DALLSA  GREY',s:'MATT  -',nb:'4021'},
-  {n:'EARTH STONE BROWN',s:'MATT  -',nb:'4022'},
-  {n:'EARTH STONE NATURAL',s:'MATT  -',nb:'4023'},
-  {n:'GRIET BROWN',s:'MATT  -',nb:'4024'},
-  {n:'GRIET CREMA',s:'MATT  -',nb:'4025'},
-  {n:'HOBART GREY',s:'MATT  -',nb:'4026'},
-  {n:'HOBART SMOKE',s:'MATT  -',nb:'4027'},
-  {n:'LOGAS BEIGE',s:'MATT  -',nb:'4028'},
-  {n:'LOGAS CHOCO',s:'MATT  -',nb:'4029'},
-  {n:'LOGAS GRAFITO',s:'MATT  -',nb:'4030'},
-  {n:'LOGAS SMOKE',s:'MATT  -',nb:'4031'},
-  {n:'MATEX BROWN',s:'MATT  -',nb:'4032'},
-  {n:'MATEX GREY',s:'MATT  -',nb:'4033'},
-  {n:'MEPALWOOD BROWN',s:'MATT  -',nb:'4034'},
-  {n:'MEPALWOOD WENGE',s:'MATT  -',nb:'4035'},
-  {n:'MILANO COFFEE',s:'MATT  -',nb:'4036'},
-  {n:'MILANO GREY',s:'MATT  -',nb:'4037'},
-  {n:'MILANO IVORY',s:'MATT  -',nb:'4038'},
-  {n:'MILANO SAND',s:'MATT  -',nb:'4039'},
-  {n:'OAK WOOD NATURAL',s:'MATT  -',nb:'4040'},
-  {n:'PINE WOOD WENGE',s:'MATT  -',nb:'4041'},
-  {n:'ROCK STONE BEIGE',s:'MATT  -',nb:'4042'},
-  {n:'ROCK STONE BROWN',s:'MATT  -',nb:'4043'},
-  {n:'ROCK STONE NATURAL',s:'MATT  -',nb:'4044'},
-  {n:'SAHARA MOON',s:'MATT  -',nb:'4045'},
-  {n:'SAHARA SAND',s:'MATT  -',nb:'4046'},
-  {n:'SAHARA  SMOKE',s:'MATT  -',nb:'4047'},
-  {n:'SHEESHAM WOOD CREMA',s:'MATT  -',nb:'4048'},
-  {n:'SPANISH GREY',s:'MATT  -',nb:'4049'},
-  {n:'TARANTONO BEIGE',s:'MATT  -',nb:'4050'},
-  {n:'TARANTONO GREY',s:'MATT  -',nb:'4051'},
-  {n:'TIMBER WOOD BEIGE',s:'MATT  -',nb:'4052'},
-  {n:'TIMBER WOOD CREMA',s:'MATT  -',nb:'4053'},
-  {n:'APOLIMA NATURAL',s:'MATT  -',nb:'4054'},
-  {n:'ARADOR BEIGE',s:'MATT  -',nb:'4055'},
-  {n:'ARGO GREY',s:'MATT  -',nb:'4056'},
-  {n:'BARK WOOD BROWN',s:'MATT  -',nb:'4057'},
-  {n:'CAMILO BROWN',s:'MATT  -',nb:'4058'},
-  {n:'EBANO FEET',s:'MATT  -',nb:'4059'},
-  {n:'GALICIA SANDDUNE',s:'MATT  -',nb:'4060'},
-  {n:'GENOVA BEIGE',s:'MATT  -',nb:'4061'},
-  {n:'LITHIA NATURAL',s:'MATT  -',nb:'4062'},
-  {n:'LONZA CREMA',s:'MATT  -',nb:'4063'},
-  {n:'MADURA',s:'MATT  -',nb:'4064'},
-  {n:'MODENA SLATE',s:'MATT  -',nb:'4065'},
-  {n:'MOSKAT MULTI',s:'MATT  -',nb:'4066'},
-  {n:'MYRA GREY',s:'MATT  -',nb:'4067'},
-  {n:'OSTER WOOD',s:'MATT  -',nb:'4068'},
-  {n:'SANDSTONE CREMA',s:'MATT  -',nb:'4069'},
-  {n:'SANDSTONE  NERO',s:'MATT  -',nb:'4070'},
-  {n:'SMOKY GREY',s:'MATT  -',nb:'4071'},
-  {n:'TESSER BEIGE',s:'MATT  -',nb:'4072'},
-  {n:'ARON AQUA',s:'MATT  -',nb:'4073'},
-  {n:'ARON  COPPER',s:'MATT  -',nb:'4074'},
-  {n:'ARON  PASTEL',s:'MATT  -',nb:'4075'},
-  {n:'BRELIN  NATURAL',s:'MATT  -',nb:'4076'},
-  {n:'CANVES BLUE',s:'MATT  -',nb:'4077'},
-  {n:'CANVES GREY',s:'MATT  -',nb:'4078'},
-  {n:'CANVES  PASTEL',s:'MATT  -',nb:'4079'},
-  {n:'CLARA BEIGE',s:'MATT  -',nb:'4080'},
-  {n:'CLARA GREY',s:'MATT  -',nb:'4081'},
-  {n:'CLASSICA BEIGE',s:'MATT  -',nb:'4082'},
-  {n:'CROSS WOOD  AQUA',s:'MATT  -',nb:'4083'},
-  {n:'CROSS WOOD ALPINE GREY',s:'MATT  -',nb:'4084'},
-  {n:'CROSS WOOD  BIANCO',s:'MATT  -',nb:'4085'},
-  {n:'CROSS WOOD  CHOCO',s:'MATT  -',nb:'4086'},
-  {n:'CROSS WOOD  CREMA',s:'MATT  -',nb:'4087'},
-  {n:'CROSS WOOD  SILVER',s:'MATT  -',nb:'4088'},
-  {n:'CROSS WOOD  GREY',s:'MATT  -',nb:'4089'},
-  {n:'CROSS WOOD  DARK GREY',s:'MATT  -',nb:'4090'},
-  {n:'CROSS WOOD  LIGHT',s:'MATT  -',nb:'4091'},
-  {n:'CROSS WOOD  NATURAL',s:'MATT  -',nb:'4092'},
-  {n:'CROSS WOOD ROYAL',s:'MATT  -',nb:'4093'},
-  {n:'FINE WOOD CREAM',s:'MATT  -',nb:'4094'},
-  {n:'LAMINA AQUA',s:'MATT  -',nb:'4095'},
-  {n:'LAMINA  SILVER',s:'MATT  -',nb:'4096'},
-  {n:'MONTANA BEIGE',s:'MATT  -',nb:'4097'},
-  {n:'PINE CEDAR',s:'MATT  -',nb:'4098'},
-  {n:'ROVER GRIS',s:'MATT  -',nb:'4099'},
-  {n:'ROYAL EXOTIC BLUE',s:'MATT  -',nb:'4100'},
-  {n:'ROYAL EXOTIC BROWN',s:'MATT  -',nb:'4101'},
-  {n:'ROYAL EXOTIC GREY',s:'MATT  -',nb:'4102'},
-  {n:'VENICE BEIGE',s:'MATT  -',nb:'4103'},
-  {n:'VENICE GREY',s:'MATT  -',nb:'4104'},
-  {n:'WAVE  CREAM',s:'MATT  -',nb:'4105'},
-  {n:'WAVE  GREY',s:'MATT  -',nb:'4106'},
-  {n:'ALASKA NERO',s:'CRV -',nb:'5001'},
-  {n:'ARIDO GREEM ECOR',s:'CRV -',nb:'5002'},
-  {n:'ASIA AQUA',s:'CRV -',nb:'5003'},
-  {n:'ASIA GOLD',s:'CRV -',nb:'5004'},
-  {n:'ASIA RED',s:'CRV -',nb:'5005'},
-  {n:'ASIA SKY',s:'CRV -',nb:'5006'},
-  {n:'ATHENCE GOLD D\u00c9COR',s:'CRV -',nb:'5007'},
-  {n:'BIXBITE NATURAL',s:'CRV -',nb:'5008'},
-  {n:'BLACK  GRANITE',s:'CRV -',nb:'5009'},
-  {n:'BONITO BEIGE',s:'CRV -',nb:'5010'},
-  {n:'BOTTOCHINO ULTRA',s:'CRV -',nb:'5011'},
-  {n:'CAIRO BLACK',s:'CRV -',nb:'5012'},
-  {n:'CAORO GREY',s:'CRV -',nb:'5013'},
-  {n:'CANYON AQUA',s:'CRV -',nb:'5014'},
-  {n:'CANYON GOLD',s:'CRV -',nb:'5015'},
-  {n:'CANYON GREEN',s:'CRV -',nb:'5016'},
-  {n:'CANYON MINT',s:'CRV -',nb:'5017'},
-  {n:'CANYON RED',s:'CRV -',nb:'5018'},
-  {n:'CANYON SMOKE',s:'CRV -',nb:'5019'},
-  {n:'CARRARA SATUARIO',s:'CRV -',nb:'5020'},
-  {n:'CEMENTO BIANCO',s:'CRV -',nb:'5021'},
-  {n:'CEMENTO  GRIS',s:'CRV -',nb:'5022'},
-  {n:'CHIPS BLUE',s:'CRV -',nb:'5023'},
-  {n:'CHIPS GREY',s:'CRV -',nb:'5024'},
-  {n:'CHIPS IVORY',s:'CRV -',nb:'5025'},
-  {n:'COCO BROWN',s:'CRV -',nb:'5026'},
-  {n:'COCO GREY',s:'CRV -',nb:'5027'},
-  {n:'CONCERETE GOLD',s:'CRV -',nb:'5028'},
-  {n:'CONCERETE  GREY',s:'CRV -',nb:'5029'},
-  {n:'CORAS BLACK',s:'CRV -',nb:'5030'},
-  {n:'CORAS CREMA',s:'CRV -',nb:'5031'},
-  {n:'COSTA NATURAL',s:'CRV -',nb:'5032'},
-  {n:'CRACON GREY',s:'CRV -',nb:'5033'},
-  {n:'ELECTRO GOLD',s:'CRV -',nb:'5034'},
-  {n:'EMPRO BROWN',s:'CRV -',nb:'5035'},
-  {n:'EMPRO  GRIS',s:'CRV -',nb:'5036'},
-  {n:'FEATHER BEIGE',s:'CRV -',nb:'5037'},
-  {n:'FLORENCE BEIGE',s:'CRV -',nb:'5038'},
-  {n:'FLORENCE GREY',s:'CRV -',nb:'5039'},
-  {n:'FLORITO BEOGE',s:'CRV -',nb:'5040'},
-  {n:'FLORITO BLUE',s:'CRV -',nb:'5041'},
-  {n:'FUSION CHOCO',s:'CRV -',nb:'5042'},
-  {n:'GALAXY BEIGE',s:'CRV -',nb:'5043'},
-  {n:'HEAVEN BEIGE',s:'CRV -',nb:'5044'},
-  {n:'HOBART AQUA D\u00c9COR',s:'CRV -',nb:'5045'},
-  {n:'IMPACT WHITE',s:'CRV -',nb:'5046'},
-  {n:'LISTELO BROWN',s:'CRV -',nb:'5047'},
-  {n:'LISTELO SMOKE',s:'CRV -',nb:'5048'},
-  {n:'MARBO CREMA',s:'CRV -',nb:'5049'},
-  {n:'MARINA CREMA',s:'CRV -',nb:'5050'},
-  {n:'MIAMI BEIGE',s:'CRV -',nb:'5051'},
-  {n:'MORIOX  BROWN',s:'CRV -',nb:'5052'},
-  {n:'MORIOX GREY',s:'CRV -',nb:'5053'},
-  {n:'MYSTIC BROWN',s:'CRV -',nb:'5054'},
-  {n:'MYSTIC NATURAL',s:'CRV -',nb:'5055'},
-  {n:'OLWIN GREY',s:'CRV -',nb:'5056'},
-  {n:'ORLEAN  AQUA D\u00c9COR',s:'CRV -',nb:'5057'},
-  {n:'PULPIS BROWN',s:'CRV -',nb:'5058'},
-  {n:'PULPIS GREY',s:'CRV -',nb:'5059'},
-  {n:'ROCK BROWN STONE',s:'CRV -',nb:'5060'},
-  {n:'ROMANTIC WHITE',s:'CRV -',nb:'5061'},
-  {n:'ROYAL BEIGE',s:'CRV -',nb:'5062'},
-  {n:'ROYAL BLUE',s:'CRV -',nb:'5063'},
-  {n:'SALANCE ICE',s:'CRV -',nb:'5064'},
-  {n:'SAND PULPIS',s:'CRV -',nb:'5065'},
-  {n:'SEA STONE GREY',s:'CRV -',nb:'5066'},
-  {n:'SAE STONE NATURAL',s:'CRV -',nb:'5067'},
-  {n:'SEA STONE WHITE',s:'CRV -',nb:'5068'},
-  {n:'STONEX CHOCO',s:'CRV -',nb:'5069'},
-  {n:'THUNDER WHITE',s:'CRV -',nb:'5070'},
-  {n:'TRAFFIC TRAVERTINO',s:'CRV -',nb:'5071'},
-  {n:'TRAVERTINO BROWN',s:'CRV -',nb:'5072'},
-  {n:'TRAVERTINO GREY',s:'CRV -',nb:'5073'},
-  {n:'AFYON SPIER',s:'CRV -',nb:'5074'},
-  {n:'ANATOLIAN GREY',s:'CRV -',nb:'5075'},
-  {n:'ARMONIA KEMAL',s:'CRV -',nb:'5076'},
-  {n:'BARROCA BEIGE',s:'CRV -',nb:'5077'},
-  {n:'BELLA CREMA',s:'CRV -',nb:'5078'},
-  {n:'BURDUR BEIGE',s:'CRV -',nb:'5079'},
-  {n:'BURNT UMBER',s:'CRV -',nb:'5080'},
-  {n:'CAREEN MILE',s:'CRV -',nb:'5081'},
-  {n:'CEDAR WOOD',s:'CRV -',nb:'5082'},
-  {n:'DESERT SAND',s:'CRV -',nb:'5083'},
-  {n:'HARSIN MINT',s:'CRV -',nb:'5084'},
-  {n:'HEMLOK GREY',s:'CRV -',nb:'5085'},
-  {n:'KHOOR MARBLE',s:'CRV -',nb:'5086'},
-  {n:'METALLICUS  GREY',s:'CRV -',nb:'5087'},
-  {n:'MILAS LILAC',s:'CRV -',nb:'5088'},
-  {n:'MOSS IVORY',s:'CRV -',nb:'5089'},
-  {n:'PARAGA BEACH',s:'CRV -',nb:'5090'},
-  {n:'PITRA GREY',s:'CRV -',nb:'5091'},
-  {n:'ROMA WOOD',s:'CRV -',nb:'5092'},
-  {n:'ROMAR PEARL',s:'CRV -',nb:'5093'},
-  {n:'SPERENZA MARBLE',s:'CRV -',nb:'5094'},
-  {n:'STARRY DARK GREY',s:'CRV -',nb:'5095'},
-  {n:'TEAK WOOD',s:'CRV -',nb:'5096'},
-  {n:'THASAS WHITE',s:'CRV -',nb:'5097'},
-  {n:'VENA SIGMA',s:'CRV -',nb:'5098'},
-  {n:'BOLERO CAPRI',s:'CRV -',nb:'5099'},
-  {n:'GLELLO VITTORIO',s:'CRV -',nb:'5100'},
-  {n:'MAPPA MARBLE',s:'CRV -',nb:'5101'},
-  {n:'MEDUSA  MARBLE',s:'CRV -',nb:'5102'},
-  {n:'NOIR SAINT LAURENT',s:'CRV -',nb:'5103'},
-  {n:'ASTER BEIGE',s:'CRV -',nb:'5104'},
-  {n:'ASTER  BIANCO',s:'CRV -',nb:'5105'},
-  {n:'ASTER CREAM',s:'CRV -',nb:'5106'},
-  {n:'ASTER  GREY',s:'CRV -',nb:'5107'},
-  {n:'BOTTOCHINO CLARO',s:'CRV -',nb:'5108'},
-  {n:'CALACUTTA ARABESQUE',s:'CRV -',nb:'5109'},
-  {n:'CALACUTTA ARABESQUE GREY',s:'CRV -',nb:'5110'},
-  {n:'CARVED GOLD',s:'CRV -',nb:'5111'},
-  {n:'CARVED SLATE',s:'CRV -',nb:'5112'},
-  {n:'CORTONA BIANCO',s:'CRV -',nb:'5113'},
-  {n:'CORTONA GESSO',s:'CRV -',nb:'5114'},
-  {n:'CORTONA GREY',s:'CRV -',nb:'5115'},
-  {n:'CORTONA OSSIDO',s:'CRV -',nb:'5116'},
-  {n:'CRISTA AMBER',s:'CRV -',nb:'5117'},
-  {n:'CRISTA DARK GREY',s:'CRV -',nb:'5118'},
-  {n:'CRISTA LIGHT',s:'CRV -',nb:'5119'},
-  {n:'CRISTA PEARL',s:'CRV -',nb:'5120'},
-  {n:'DINOVA BEIGE',s:'CRV -',nb:'5121'},
-  {n:'DINOVA GREY',s:'CRV -',nb:'5122'},
-  {n:'ESSENTIAL GRAPHITE',s:'CRV -',nb:'5123'},
-  {n:'ESSENTIAL MARRON',s:'CRV -',nb:'5124'},
-  {n:'EVO MARMO',s:'CRV -',nb:'5125'},
-  {n:'EVO MARMO GRIS',s:'CRV -',nb:'5126'},
-  {n:'EVO MARMO MARRON',s:'CRV -',nb:'5127'},
-  {n:'FORENZE GREY',s:'CRV -',nb:'5128'},
-  {n:'FORNZE GOLD',s:'CRV -',nb:'5129'},
-  {n:'IMAGINE DARK',s:'CRV -',nb:'5130'},
-  {n:'IMAGINE LIGHT',s:'CRV -',nb:'5131'},
-  {n:'LIMER BEIGE',s:'CRV -',nb:'5132'},
-  {n:'LIMER BIANCO',s:'CRV -',nb:'5133'},
-  {n:'LIMER BROWN',s:'CRV -',nb:'5134'},
-  {n:'LIMER CREAM',s:'CRV -',nb:'5135'},
-  {n:'LIMER GREY',s:'CRV -',nb:'5136'},
-  {n:'MALTA BEIGE',s:'CRV -',nb:'5137'},
-  {n:'MALTA BIANCO',s:'CRV -',nb:'5138'},
-  {n:'MEGNETIC GOLD',s:'CRV -',nb:'5139'},
-  {n:'MEGNETIC GREY',s:'CRV -',nb:'5140'},
-  {n:'MONTE BIANCO',s:'CRV -',nb:'5141'},
-  {n:'MORENO BIANCO',s:'CRV -',nb:'5142'},
-  {n:'MORENO CREMA',s:'CRV -',nb:'5143'},
-  {n:'MORENO HAZEL',s:'CRV -',nb:'5144'},
-  {n:'MORENO MARFIL',s:'CRV -',nb:'5145'},
-  {n:'MORENO SILVER',s:'CRV -',nb:'5146'},
-  {n:'NHEPRITE BEIGE',s:'CRV -',nb:'5147'},
-  {n:'NHEPRITE  DARK GREY',s:'CRV -',nb:'5148'},
-  {n:'NHEPRITE  GREY',s:'CRV -',nb:'5149'},
-  {n:'NHEPRITE  GRIGIO',s:'CRV -',nb:'5150'},
-  {n:'OMEGA BEIGE',s:'CRV -',nb:'5151'},
-  {n:'OMEGA  BIANCO',s:'CRV -',nb:'5152'},
-  {n:'OMEGA GREY',s:'CRV -',nb:'5153'},
-  {n:'PALAYA  BEIGE',s:'CRV -',nb:'5154'},
-  {n:'PALAYA  BIANCO',s:'CRV -',nb:'5155'},
-  {n:'PALAYA  BLUE',s:'CRV -',nb:'5156'},
-  {n:'PALAYA CREMA',s:'CRV -',nb:'5157'},
-  {n:'PALAYA  DUST',s:'CRV -',nb:'5158'},
-  {n:'PALAYA GREY',s:'CRV -',nb:'5159'},
-  {n:'QUARTZ',s:'CRV -',nb:'5160'},
-  {n:'QUARTZ CREAM',s:'CRV -',nb:'5161'},
-  {n:'QUARTZ WHITE',s:'CRV -',nb:'5162'},
-  {n:'ROYAL SATUARIO GOLD',s:'CRV -',nb:'5163'},
-  {n:'SETIDO',s:'CRV -',nb:'5164'},
-  {n:'STONELLA BIANCO',s:'CRV -',nb:'5165'},
-  {n:'STONELLA CREMA',s:'CRV -',nb:'5166'},
-  {n:'STONELLA GRIS',s:'CRV -',nb:'5167'},
-  {n:'SUMMER WHITE',s:'CRV -',nb:'5168'},
-  {n:'TERRA BEIGE',s:'CRV -',nb:'5169'},
-  {n:'TERRA GRAPHITE',s:'CRV -',nb:'5170'},
-  {n:'TERRA GRAPHITE  GREY',s:'CRV -',nb:'5171'},
-  {n:'TIFFENY GREY',s:'CRV -',nb:'5172'},
-  {n:'WINTER AMBER',s:'CRV -',nb:'5173'},
-  {n:'WINTER CREMA',s:'CRV -',nb:'5174'},
-  {n:'WINTER DARK',s:'CRV -',nb:'5175'},
-  {n:'WINTER LIGHT',s:'CRV -',nb:'5176'},
-  {n:'WINTER MID',s:'CRV -',nb:'5177'},
-  {n:'WINTERO IVORY',s:'CRV -',nb:'5178'},
-  {n:'WINTERO PEARL',s:'CRV -',nb:'5179'},
-  {n:'ABSOLUTE BLACK',s:'HG -',nb:'6001'},
-  {n:'ABSTRACT BROWN',s:'HG -',nb:'6002'},
-  {n:'AGATHA BLUE',s:'HG -',nb:'6003'},
-  {n:'AMANI BLUE',s:'HG -',nb:'6004'},
-  {n:'ANTICA BLACK',s:'HG -',nb:'6005'},
-  {n:'ANTOLIA COFFEE',s:'HG -',nb:'6006'},
-  {n:'ARMANI COFFEE',s:'HG -',nb:'6007'},
-  {n:'ASTRA BLACK D\u00c9COR',s:'HG -',nb:'6008'},
-  {n:'ATLANTIS OCEAN',s:'HG -',nb:'6009'},
-  {n:'BLACK MARQUINA',s:'HG -',nb:'6010'},
-  {n:'BLUE BAHIA',s:'HG -',nb:'6011'},
-  {n:'BLUE MOON',s:'HG -',nb:'6012'},
-  {n:'CELLOSIA BLUE',s:'HG -',nb:'6013'},
-  {n:'COBALT BLUE',s:'HG -',nb:'6014'},
-  {n:'COSMIC BLUE',s:'HG -',nb:'6015'},
-  {n:'COSMOS BROWN',s:'HG -',nb:'6016'},
-  {n:'COYATE BLACK D\u00c9COR',s:'HG -',nb:'6017'},
-  {n:'DENIM BLUE',s:'HG -',nb:'6018'},
-  {n:'EARTH TONE BLUE',s:'HG -',nb:'6019'},
-  {n:'EARTH TONE  BROWN',s:'HG -',nb:'6020'},
-  {n:'EARTH TONE  GOLDEN',s:'HG -',nb:'6021'},
-  {n:'EMERALD BLUE',s:'HG -',nb:'6022'},
-  {n:'ESTRADA BLACK',s:'HG -',nb:'6023'},
-  {n:'EXOTIC D\u00c9COR',s:'HG -',nb:'6024'},
-  {n:'FLORIDA GOLD',s:'HG -',nb:'6025'},
-  {n:'FOREST BROWN',s:'HG -',nb:'6026'},
-  {n:'FOSSIL BLACK',s:'HG -',nb:'6027'},
-  {n:'GOLDEN BLACK',s:'HG -',nb:'6028'},
-  {n:'GOLDEN PORTORO',s:'HG -',nb:'6029'},
-  {n:'HECATE GLOBAL',s:'HG -',nb:'6030'},
-  {n:'HEXA BLACK D\u00c9COR',s:'HG -',nb:'6031'},
-  {n:'INFINITY BLUE',s:'HG -',nb:'6032'},
-  {n:'KENYA BLACK',s:'HG -',nb:'6033'},
-  {n:'LAVA NATURAL',s:'HG -',nb:'6034'},
-  {n:'LIQUID BLUE',s:'HG -',nb:'6035'},
-  {n:'LUMINA BLACK',s:'HG -',nb:'6036'},
-  {n:'MAGIC AZULE',s:'HG -',nb:'6037'},
-  {n:'MAGMA NATURAL',s:'HG -',nb:'6038'},
-  {n:'MAKARANI BROWN',s:'HG -',nb:'6039'},
-  {n:'MARBITA BLACK D\u00c9COR',s:'HG -',nb:'6040'},
-  {n:'MARINA BLACK',s:'HG -',nb:'6041'},
-  {n:'MEDITARIAN BLACK',s:'HG -',nb:'6042'},
-  {n:'MORIOX BROWN',s:'HG -',nb:'6043'},
-  {n:'NEO EMPERA BROWN',s:'HG -',nb:'6044'},
-  {n:'NATURAL BRILLIANT',s:'HG -',nb:'6045'},
-  {n:'OPERA AZULE',s:'HG -',nb:'6046'},
-  {n:'OPERA BLACK',s:'HG -',nb:'6047'},
-  {n:'OROBICO BROWN',s:'HG -',nb:'6048'},
-  {n:'OXIDO BLACK',s:'HG -',nb:'6049'},
-  {n:'PANDA BLACK',s:'HG -',nb:'6050'},
-  {n:'PORT BLACK',s:'HG -',nb:'6051'},
-  {n:'PORTORO BLACK',s:'HG -',nb:'6052'},
-  {n:'PORTORO SILVER',s:'HG -',nb:'6053'},
-  {n:'RIVERA BROWN',s:'HG -',nb:'6054'},
-  {n:'ROSSO BLACK',s:'HG -',nb:'6055'},
-  {n:'ROSSO BROWN',s:'HG -',nb:'6056'},
-  {n:'SAINT LAURENT',s:'HG -',nb:'6057'},
-  {n:'SANDSTONE BROWN',s:'HG -',nb:'6058'},
-  {n:'SMOKEY QUARTZ',s:'HG -',nb:'6059'},
-  {n:'SOFTSTONE NATURAL',s:'HG -',nb:'6060'},
-  {n:'STONEX BROWN',s:'HG -',nb:'6061'},
-  {n:'STROM MINK',s:'HG -',nb:'6062'},
-  {n:'TURKISH VARDE',s:'HG -',nb:'6063'},
-  {n:'ZIBRA BLACK',s:'HG -',nb:'6064'},
-  {n:'AMORA',s:'HG -',nb:'6065'},
-  {n:'ARIKA',s:'HG -',nb:'6066'},
-  {n:'ARMEIDA',s:'HG -',nb:'6067'},
-  {n:'ASTER',s:'HG -',nb:'6068'},
-  {n:'BIDASAR BEAUTY',s:'HG -',nb:'6069'},
-  {n:'CRYSTALLO VITTRO',s:'HG -',nb:'6070'},
-  {n:'ELLA BLACK',s:'HG -',nb:'6071'},
-  {n:'GRANIT BROWN',s:'HG -',nb:'6072'},
-  {n:'GRAVIER',s:'HG -',nb:'6073'},
-  {n:'GUANGXI  WHITE',s:'HG -',nb:'6074'},
-  {n:'IRAQ LIZA',s:'HG -',nb:'6075'},
-  {n:'LIMINAL',s:'HG -',nb:'6076'},
-  {n:'MISTICEO BLACK',s:'HG -',nb:'6077'},
-  {n:'MUNICH',s:'HG -',nb:'6078'},
-  {n:'ORMEA BLACK',s:'HG -',nb:'6079'},
-  {n:'PICASSO CRISTAL',s:'HG -',nb:'6080'},
-  {n:'POPE PINE',s:'HG -',nb:'6081'},
-  {n:'ROSA ZARCI',s:'HG -',nb:'6082'},
-  {n:'RUIVINA TIGAR',s:'HG -',nb:'6083'},
-  {n:'RUSET NATURAL',s:'HG -',nb:'6084'},
-  {n:'STRICKLE',s:'HG -',nb:'6085'},
-  {n:'TAGLE BLACK',s:'HG -',nb:'6086'},
-  {n:'TIAL POSA',s:'HG -',nb:'6087'},
-  {n:'VIA LACTEA',s:'HG -',nb:'6088'},
-  {n:'VOLCANO BLACK',s:'HG -',nb:'6089'},
-  {n:'ALLOY CONTOUR',s:'BM -',nb:'6090'},
-  {n:'AMAZONE AUA',s:'BM -',nb:'6091'},
-  {n:'AQUA BIANCO FANTASTIC',s:'BM -',nb:'6092'},
-  {n:'ATLANTIS  AQUA',s:'BM -',nb:'6093'},
-  {n:'AZERO MULTY',s:'BM -',nb:'6094'},
-  {n:'BLACK COSMIC',s:'BM -',nb:'6095'},
-  {n:'CASTANO AQUA',s:'BM -',nb:'6096'},
-  {n:'COBWEB AQUA',s:'BM -',nb:'6097'},
-  {n:'COBWEB GREEN',s:'BM -',nb:'6098'},
-  {n:'COLOGNE GREEN',s:'BM -',nb:'6099'},
-  {n:'CORAL PEARL',s:'BM -',nb:'6100'},
-  {n:'COSMIC GREEN',s:'BM -',nb:'6101'},
-  {n:'CRIMSON TEAL',s:'BM -',nb:'6102'},
-  {n:'DENVER  AQUA',s:'BM -',nb:'6103'},
-  {n:'DOMINO AQUA',s:'BM -',nb:'6104'},
-  {n:'DOMINO RED',s:'BM -',nb:'6105'},
-  {n:'DOMINO WHITE',s:'BM -',nb:'6106'},
-  {n:'DORATO AQUA',s:'BM -',nb:'6107'},
-  {n:'ELEGANCE BLUE',s:'BM -',nb:'6108'},
-  {n:'ELEGANCE NATURAL',s:'BM -',nb:'6109'},
-  {n:'ELVINE NATURAL',s:'BM -',nb:'6110'},
-  {n:'EMASER AQUA',s:'BM -',nb:'6111'},
-  {n:'FANTASTIC ONYX AQUA',s:'BM -',nb:'6112'},
-  {n:'FIREBOTT NATURAL',s:'BM -',nb:'6113'},
-  {n:'FOSION AQUA',s:'BM -',nb:'6114'},
-  {n:'GOLDEN ANTOLIA',s:'BM -',nb:'6115'},
-  {n:'GREEN REVERIE',s:'BM -',nb:'6116'},
-  {n:'GRIGIO AQUA ONYX',s:'BM -',nb:'6117'},
-  {n:'GRIGIO RED ONYX',s:'BM -',nb:'6118'},
-  {n:'ICE ONYX AQUA',s:'BM -',nb:'6119'},
-  {n:'IMPERIAL RUST',s:'BM -',nb:'6120'},
-  {n:'INTEGRA BLACK',s:'BM -',nb:'6121'},
-  {n:'JENET GREEN',s:'BM -',nb:'6122'},
-  {n:'LAWA AQUA',s:'BM -',nb:'6123'},
-  {n:'MAGIC SANTORINI',s:'BM -',nb:'6124'},
-  {n:'MAGMA',s:'BM -',nb:'6125'},
-  {n:'MARMEZ AQUA',s:'BM -',nb:'6126'},
-  {n:'MISCIBLE AQUA',s:'BM -',nb:'6127'},
-  {n:'MOON ONYX GREEN',s:'BM -',nb:'6128'},
-  {n:'MUSTARD NATURAL',s:'BM -',nb:'6129'},
-  {n:'ORENGE ONYX',s:'BM -',nb:'6130'},
-  {n:'ONYX EMERALD',s:'BM -',nb:'6131'},
-  {n:'OPERA BLUU',s:'BM -',nb:'6132'},
-  {n:'OZONE AQUA',s:'BM -',nb:'6133'},
-  {n:'PAINT AQUA',s:'BM -',nb:'6134'},
-  {n:'RIGA BRONZE',s:'BM -',nb:'6135'},
-  {n:'ROMAN AQUA',s:'BM -',nb:'6136'},
-  {n:'SPIDER GREEN',s:'BM -',nb:'6137'},
-  {n:'STROM NATURAL',s:'BM -',nb:'6138'},
-  {n:'TORENTO AQUA',s:'BM -',nb:'6139'},
-  {n:'TROPOCAL AQUA',s:'BM -',nb:'6140'},
-  {n:'TROPOCAL  GREEN',s:'BM -',nb:'6141'},
-  {n:'URBAN GREEN',s:'BM -',nb:'6142'},
-  {n:'URBAN NATURAL',s:'BM -',nb:'6143'},
-  {n:'VINTAGE MAYA',s:'BM -',nb:'6144'},
-  {n:'WILLAIM NATURAL',s:'BM -',nb:'6145'},
-  {n:'ADEN',s:'BM -',nb:'6146'},
-  {n:'AKOTA',s:'BM -',nb:'6147'},
-  {n:'BASEL',s:'BM -',nb:'6148'},
-  {n:'BELFAST',s:'BM -',nb:'6149'},
-  {n:'BISHKEK',s:'BM -',nb:'6150'},
-  {n:'BITCON',s:'BM -',nb:'6151'},
-  {n:'BOGATA',s:'BM -',nb:'6152'},
-  {n:'BRUSSELS',s:'BM -',nb:'6153'},
-  {n:'BUKHARA',s:'BM -',nb:'6154'},
-  {n:'CALVIN',s:'BM -',nb:'6155'},
-  {n:'CANDID',s:'BM -',nb:'6156'},
-  {n:'CARTIER',s:'BM -',nb:'6157'},
-  {n:'EMERALD STONE',s:'BM -',nb:'6158'},
-  {n:'MAROON AQUA',s:'BM -',nb:'6159'},
-  {n:'MAROON FOSSILE',s:'BM -',nb:'6160'},
-  {n:'MAROON GREEN',s:'BM -',nb:'6161'},
-  {n:'DEVIS BLACK',s:'HG -',nb:'6170'},
-  {n:'COPPER WAVE',s:'LQD-EN -',nb:'1074'},
-  {n:'CRISP NATURAL',s:'LQD-EN -',nb:'1075'},
-  {n:'CRISP WARM',s:'LQD-EN -',nb:'1076'},
-  {n:'JURIAL GOLD',s:'LQD-EN -',nb:'1077'},
-  {n:'FERRA WHITE',s:'LQD-EN -',nb:'2199'},
-  {n:'GOLDEN CYCLON',s:'LQD-EN -',nb:'2200'},
-  {n:'GREY GOLD',s:'LQD-EN -',nb:'2201'},
-  {n:'MONARCH COPPER',s:'LQD-EN -',nb:'2202'},
-  {n:'REDICO WHITE',s:'LQD-EN -',nb:'2203'},
-  {n:'ROSIE GOLD',s:'LQD-EN -',nb:'2204'},
-  {n:'ADCTION GOLD',s:'LQD-EN -',nb:'6162'},
-  {n:'ALVINO GOLD',s:'LQD-EN -',nb:'6163'},
-  {n:'BLEACH AQUA',s:'LQD-EN -',nb:'6164'},
-  {n:'GOLDEN ANGLE',s:'LQD-EN -',nb:'6165'},
-  {n:'GOLDEN SPIRAL',s:'LQD-EN -',nb:'6166'},
-  {n:'LETIS GOLD',s:'LQD-EN -',nb:'6167'},
-  {n:'LUXURINT GOLD',s:'LQD-EN -',nb:'6168'},
-  {n:'OLLIN NATURAL',s:'LQD-EN -',nb:'6169'}
-];
+    .ditem.sel {
+      background: #deeaf1
+    }
 
-var catalog = [];
-var selected = {};
-var rows     = [];
-var editIdx  = -1;
-var sortCol  = '';
-var sortAsc  = true;
-var ridSeq   = 0;
+    .dname {
+      font-weight: 500;
+      flex: 1;
+      color: #222
+    }
 
-for (var _s = 0; _s < SEED.length; _s++) {
-  catalog.push({n: SEED[_s].n, s: SEED[_s].s, nb: SEED[_s].nb});
-}
+    .dnb {
+      font-size: 11px;
+      color: #888;
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 5px;
+      flex-shrink: 0
+    }
 
-function gid(id) { return document.getElementById(id); }
+    .ditem.sel .dnb {
+      background: #bdd7ee;
+      color: #1a3a5c
+    }
 
-function esc(v) {
-  return String(v)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
+    .dchk {
+      color: #1a3a5c;
+      font-size: 14px;
+      font-weight: 700;
+      margin-left: 4px;
+      flex-shrink: 0
+    }
 
-function uid() { return 'r' + String(++ridSeq); }
+    .hl {
+      background: #fff3b0;
+      font-weight: 700;
+      border-radius: 2px
+    }
 
-var _tt = null;
-function toast(msg, type) {
-  var el = gid('toastEl');
-  el.textContent = msg;
-  el.className = 'toast t-' + (type || 'info');
-  el.classList.add('show');
-  clearTimeout(_tt);
-  _tt = setTimeout(function() { el.classList.remove('show'); }, 2800);
-}
+    .no-res {
+      padding: 20px;
+      text-align: center;
+      color: #aaa;
+      font-size: 13px
+    }
 
-var searchQ = '';
+    /* chips */
+    .chips-sec {
+      flex-shrink: 0;
+      border-top: 2px solid #e8eef4;
+      display: flex;
+      flex-direction: column;
+      max-height: 96px;
+      min-height: 32px
+    }
 
-function getFiltered() {
-  var q = searchQ.trim().toLowerCase();
-  if (!q) return catalog;
-  var out = [];
-  for (var i = 0; i < catalog.length; i++) {
-    var d = catalog[i];
-    if (d.n.toLowerCase().indexOf(q) >= 0 ||
-        d.s.toLowerCase().indexOf(q) >= 0 ||
-        String(d.nb).indexOf(q) >= 0) { out.push(d); }
-  }
-  return out;
-}
+    .chips-hdr {
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0
+    }
 
-function hlText(text, q) {
-  if (!q.trim()) return esc(text);
-  var lo = text.toLowerCase(), loq = q.trim().toLowerCase();
-  var i  = lo.indexOf(loq);
-  if (i < 0) return esc(text);
-  return esc(text.slice(0, i)) +
-    '<span class="hl">' + esc(text.slice(i, i + loq.length)) + '</span>' +
-    esc(text.slice(i + loq.length));
-}
+    .chips-count {
+      font-size: 11px;
+      font-weight: 700;
+      color: #2e74b5
+    }
 
-function renderList() {
-  var filtered = getFiltered();
-  gid('srchStats').textContent = searchQ.trim()
-    ? (filtered.length + ' of ' + catalog.length + ' designs')
-    : ('Showing all ' + catalog.length + ' designs');
+    .btn-clrall {
+      font-size: 11px;
+      color: #c00;
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      background: none;
+      padding: 0;
+      display: none
+    }
 
-  var list = gid('dlist');
-  if (!filtered.length) {
-    list.innerHTML = '<div class="no-res">No designs match &ldquo;' + esc(searchQ) + '&rdquo;</div>';
-    return;
-  }
-  var MAX = 150, shown = filtered.length > MAX ? filtered.slice(0, MAX) : filtered;
-  var html = '';
-  for (var i = 0; i < shown.length; i++) {
-    var d = shown[i], isSel = selected[d.n] ? ' sel' : '';
-    html += '<div class="ditem' + isSel + '" data-nm="' + esc(d.n) + '">' +
-      '<span class="dname">' + hlText(d.n, searchQ) + '</span>' +
-      '<span style="display:flex;align-items:center;gap:3px">' +
-        '<span class="dnb">' + esc(String(d.nb)) + '</span>' +
-        (selected[d.n] ? '<span class="dchk">&#10003;</span>' : '') +
-      '</span></div>';
-  }
-  if (filtered.length > MAX) {
-    html += '<div class="no-res" style="font-size:11px;padding:6px">Showing ' + MAX + ' of ' + filtered.length + ' &mdash; refine search</div>';
-  }
-  list.innerHTML = html;
-}
+    .chips-wrap {
+      padding: 0 8px 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      overflow-y: auto
+    }
 
-function selCount() { return Object.keys(selected).length; }
-function updateShowBtn() { gid('showBtn').disabled = selCount() === 0; }
+    .chip {
+      background: #1a3a5c;
+      color: #fff;
+      border-radius: 16px;
+      padding: 3px 8px 3px 10px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      max-width: 180px
+    }
 
-gid('dlist').addEventListener('click', function(e) {
-  var el = e.target;
-  while (el && el !== this) {
-    if (el.className && el.className.indexOf('ditem') >= 0) break;
-    el = el.parentNode;
-  }
-  if (!el || el === this) return;
-  var nm = el.getAttribute('data-nm');
-  if (!nm) return;
-  if (selected[nm]) { delete selected[nm]; } else { selected[nm] = true; }
-  renderList(); renderChips(); updateShowBtn();
-  gid('bdgSel').textContent = selCount() + ' selected';
-});
+    .chip span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
 
-function renderChips() {
-  var cnt = selCount();
-  gid('chipsCount').textContent = cnt + ' selected';
-  gid('btnClrAll').style.display = cnt > 0 ? 'inline' : 'none';
-  var names = Object.keys(selected);
-  if (!names.length) { gid('chipsWrap').innerHTML = ''; return; }
-  var html = '';
-  for (var i = 0; i < names.length; i++) {
-    var nm = names[i], label = nm.length > 22 ? nm.slice(0, 20) + '...' : nm;
-    html += '<div class="chip"><span title="' + esc(nm) + '">' + esc(label) + '</span>' +
-      '<button class="chip-x" data-nm="' + esc(nm) + '">&#215;</button></div>';
-  }
-  gid('chipsWrap').innerHTML = html;
-}
+    .chip-x {
+      cursor: pointer;
+      opacity: .7;
+      font-size: 12px;
+      flex-shrink: 0;
+      border: none;
+      background: none;
+      color: #fff;
+      padding: 0;
+      line-height: 1
+    }
 
-gid('chipsWrap').addEventListener('click', function(e) {
-  var el = e.target;
-  while (el && el !== this) {
-    if (el.className && el.className.indexOf('chip-x') >= 0) break;
-    el = el.parentNode;
-  }
-  if (!el || el === this) return;
-  var nm = el.getAttribute('data-nm');
-  if (nm) {
-    delete selected[nm];
-    renderList(); renderChips(); updateShowBtn();
-    gid('bdgSel').textContent = selCount() + ' selected';
-  }
-});
+    .chip-x:hover {
+      opacity: 1
+    }
 
-function clearAll() {
-  selected = {}; renderList(); renderChips(); updateShowBtn();
-  gid('bdgSel').textContent = '0 selected';
-}
+    /* action bar */
+    .actbar {
+      flex-shrink: 0;
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      border-top: 2px solid #e8eef4
+    }
 
-function selectVisible() {
-  var f = getFiltered();
-  for (var i = 0; i < f.length; i++) selected[f[i].n] = true;
-  renderList(); renderChips(); updateShowBtn();
-  gid('bdgSel').textContent = selCount() + ' selected';
-}
+    /* ── RIGHT PANEL ── */
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden
+    }
 
-function showResults() {
-  if (!selCount()) return;
-  var inTable = {}, names = Object.keys(selected), added = 0;
-  for (var i = 0; i < rows.length; i++) inTable[rows[i].n] = true;
-  for (var j = 0; j < names.length; j++) {
-    if (inTable[names[j]]) continue;
-    for (var k = 0; k < catalog.length; k++) {
-      if (catalog[k].n === names[j]) {
-        rows.push({id:uid(), n:catalog[k].n, s:catalog[k].s, nb:catalog[k].nb, qty:1, chk:false});
-        added++; break;
+    /* toolbar */
+    .toolbar {
+      background: #fff;
+      padding: 8px 16px;
+      border-bottom: 2px solid #d0dce8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 6px
+    }
+
+    .tleft {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0
+    }
+
+    .tright {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .res-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a3a5c;
+      white-space: nowrap
+    }
+
+    .res-sub {
+      font-size: 11px;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px
+    }
+
+    /* hamburger (mobile) */
+    .ham-btn {
+      display: none;
+      background: none;
+      border: 1px solid #2e74b5;
+      border-radius: 6px;
+      padding: 5px 8px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #1a3a5c;
+      flex-shrink: 0
+    }
+
+    /* table scroll area */
+    .tarea {
+      flex: 1;
+      overflow: auto;
+      padding: 12px 14px;
+      min-height: 0;
+      -webkit-overflow-scrolling: touch
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .08)
+    }
+
+    thead th {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 9px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      text-align: center;
+      white-space: nowrap;
+      cursor: default
+    }
+
+    thead th.sort {
+      cursor: pointer
+    }
+
+    thead th.sort:hover {
+      background: #122840
+    }
+
+    .th-name {
+      text-align: left
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #edf2f7
+    }
+
+    tbody tr:hover {
+      background: #f5f9fd
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafcff
+    }
+
+    tbody tr:nth-child(even):hover {
+      background: #eef5fb
+    }
+
+    tbody td {
+      padding: 8px 10px;
+      font-size: 12px;
+      text-align: center;
+      vertical-align: middle
+    }
+
+    .td-name {
+      text-align: left;
+      font-weight: 600;
+      color: #1a3a5c;
+      min-width: 120px
+    }
+
+    .surf-tag {
+      font-size: 10px;
+      color: #666;
+      background: #f0f4f8;
+      padding: 2px 6px;
+      border-radius: 10px;
+      display: inline-block
+    }
+
+    .td-num {
+      font-family: monospace;
+      color: #375623;
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    .qty-inp {
+      width: 60px;
+      padding: 4px 6px;
+      font-size: 12px;
+      border: 1.5px solid #bdd7ee;
+      border-radius: 5px;
+      text-align: center;
+      outline: none;
+      font-weight: 600
+    }
+
+    .qty-inp:focus {
+      border-color: #2e74b5
+    }
+
+    .row-acts {
+      display: flex;
+      justify-content: center;
+      gap: 4px
+    }
+
+    .ib {
+      background: none;
+      border: 1px solid #d0dce8;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 3px 7px;
+      font-size: 12px
+    }
+
+    .ib:hover {
+      background: #ebf3fb;
+      border-color: #2e74b5
+    }
+
+    .ib.del:hover {
+      background: #fff0f0;
+      border-color: #c00
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: #aaa
+    }
+
+    .empty-state .ei {
+      font-size: 40px;
+      margin-bottom: 10px
+    }
+
+    .empty-state p {
+      font-size: 13px
+    }
+
+    /* ── EXPORT BAR ── */
+    .expbar {
+      background: #fff;
+      border-top: 2px solid #d0dce8;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .exp-info {
+      font-size: 12px;
+      color: #666;
+      min-width: 0;
+      flex: 1
+    }
+
+    .exp-btns {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 7px 12px;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      line-height: 1;
+      white-space: nowrap;
+      touch-action: manipulation
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .b-blue {
+      background: #1a3a5c;
+      color: #fff
+    }
+
+    .b-blue:not([disabled]):hover {
+      background: #122840
+    }
+
+    .b-green {
+      background: #375623;
+      color: #fff
+    }
+
+    .b-green:hover {
+      background: #2a4019
+    }
+
+    .b-red {
+      background: #c00;
+      color: #fff
+    }
+
+    .b-red:hover {
+      background: #900
+    }
+
+    .b-out {
+      background: #fff;
+      color: #1a3a5c;
+      border: 2px solid #2e74b5
+    }
+
+    .b-out:hover {
+      background: #ebf3fb
+    }
+
+    .b-orange {
+      background: #d97706;
+      color: #fff
+    }
+
+    .b-orange:hover {
+      background: #b45309
+    }
+
+    /* ── MODALS ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px
+    }
+
+    .overlay.open {
+      display: flex
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      width: 400px;
+      max-width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden
+    }
+
+    .modal-hdr {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .modal-hdr h3 {
+      font-size: 15px;
+      font-weight: 700
+    }
+
+    .modal-x {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 20px;
+      opacity: .7;
+      line-height: 1
+    }
+
+    .modal-x:hover {
+      opacity: 1
+    }
+
+    .modal-body {
+      padding: 18px
+    }
+
+    .mf {
+      margin-bottom: 14px
+    }
+
+    .mf label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .4px
+    }
+
+    .mf input {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 13px;
+      border: 1.5px solid #c8d8e8;
+      border-radius: 7px;
+      outline: none
+    }
+
+    .mf input:focus {
+      border-color: #2e74b5;
+      box-shadow: 0 0 0 3px rgba(46, 116, 181, .12)
+    }
+
+    .mf .hint {
+      font-size: 11px;
+      color: #888;
+      margin-top: 3px
+    }
+
+    .modal-foot {
+      padding: 12px 18px;
+      border-top: 1px solid #e8eef4;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end
+    }
+
+    .confirm-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 24px;
+      width: 300px;
+      max-width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .25)
+    }
+
+    .confirm-box h3 {
+      font-size: 16px;
+      color: #1a3a5c;
+      margin-bottom: 8px
+    }
+
+    .confirm-box p {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 18px
+    }
+
+    .confirm-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: .3s ease;
+      pointer-events: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
+      max-width: calc(100vw - 32px)
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    .t-ok {
+      background: #375623
+    }
+
+    .t-err {
+      background: #c00
+    }
+
+    .t-warn {
+      background: #d97706
+    }
+
+    .t-info {
+      background: #1a3a5c
+    }
+
+    /* ── MOBILE OVERLAY for left panel ── */
+    .left-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      z-index: 500
+    }
+
+    .left-overlay.open {
+      display: block
+    }
+
+    /* ── RESPONSIVE BREAKPOINTS ── */
+
+    /* Tablet: 600-900px — stack layout, left panel slides in */
+    @media(max-width:900px) {
+      .body {
+        flex-direction: column;
+        overflow: visible
+      }
+
+      .left {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 600;
+        width: 320px;
+        max-width: 90vw;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, .2)
+      }
+
+      .left.open {
+        transform: translateX(0)
+      }
+
+      .panel-hdr .close-left {
+        display: block
+      }
+
+      .right {
+        width: 100%;
+        flex: 1;
+        min-height: 0
+      }
+
+      .ham-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px
+      }
+
+      .dealer-hint {
+        display: none
       }
     }
-  }
-  if (!added) { toast('All selected designs already in table', 'warn'); return; }
-  renderTable();
-  toast(added + ' design' + (added > 1 ? 's' : '') + ' added', 'ok');
-}
 
-function renderTable() {
-  var n = rows.length;
-  gid('resTitle').textContent = n > 0 ? ('Design Details (' + n + ')') : 'Design Details';
-  gid('resSub').textContent   = n > 0 ? (n + ' design' + (n>1?'s':'') + ' ready to export') : 'Select designs and click SHOW';
-  gid('expInfo').textContent  = n > 0 ? (n + ' item' + (n>1?'s':'') + ' ready to export') : 'No items to export';
-  gid('xlBtn').disabled  = n === 0;
-  gid('pdfBtn').disabled = n === 0;
-  var anyChk = false, allChk = n > 0;
-  for (var i = 0; i < rows.length; i++) { if (rows[i].chk) anyChk = true; else allChk = false; }
-  gid('rmSelBtn').style.display = anyChk ? 'flex' : 'none';
-  var acb = gid('allCb'); acb.checked = allChk && n > 0; acb.indeterminate = !allChk && anyChk;
-  if (!n) {
-    gid('tbody').innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="ei">&#127912;</div><p>Select designs from the left panel and click <b>SHOW</b></p></div></td></tr>';
-    return;
-  }
-  var html = '';
-  for (var i = 0; i < rows.length; i++) {
-    var r = rows[i], bg = i % 2 ? ' style="background:#fafcff"' : '';
-    html += '<tr id="tr_' + r.id + '"' + bg + '>' +
-      '<td><input type="checkbox"' + (r.chk?' checked':'') + ' class="rowcb" data-id="' + r.id + '"></td>' +
-      '<td style="color:#888;font-weight:600">' + (i+1) + '</td>' +
-      '<td class="td-name">' + esc(r.n) + '</td>' +
-      '<td><span class="surf-tag">' + esc(r.s) + '</span></td>' +
-      '<td class="td-num">' + esc(String(r.nb)) + '</td>' +
-      '<td><input class="qty-inp" type="number" min="1" value="' + (r.qty||1) + '" data-id="' + r.id + '"></td>' +
-      '<td><div class="row-acts">' +
-        '<button class="ib edit-btn" data-id="' + r.id + '" title="Edit">&#9998;</button>' +
-        '<button class="ib del del-btn" data-id="' + r.id + '" title="Remove">&#128465;</button>' +
-      '</div></td></tr>';
-  }
-  gid('tbody').innerHTML = html;
-}
+    /* Small mobile: < 480px */
+    @media(max-width:480px) {
+      .topbar {
+        padding: 0 12px;
+        min-height: 48px
+      }
 
-function rowById(id) { for (var i=0;i<rows.length;i++) if (rows[i].id===id) return rows[i]; return null; }
+      .topbar h1 {
+        font-size: 14px
+      }
 
-function syncQty() {
-  var inps = document.querySelectorAll('.qty-inp');
-  for (var i=0; i<inps.length; i++) {
-    var r = rowById(inps[i].getAttribute('data-id'));
-    if (r) r.qty = Math.max(1, parseInt(inps[i].value, 10) || 1);
-  }
-}
+      .badges {
+        display: none
+      }
 
-gid('tbody').addEventListener('change', function(e) {
-  var el = e.target, id = el.getAttribute('data-id');
-  if (!id) return;
-  var r = rowById(id);
-  if (!r) return;
-  if (el.className.indexOf('rowcb') >= 0)   { r.chk = el.checked; renderTable(); }
-  if (el.className.indexOf('qty-inp') >= 0) { r.qty = Math.max(1, parseInt(el.value,10)||1); }
-});
+      .dealerbar {
+        padding: 6px 12px;
+        gap: 6px
+      }
 
-gid('tbody').addEventListener('click', function(e) {
-  var el = e.target, id = el.getAttribute ? el.getAttribute('data-id') : null;
-  if (!id) return;
-  if (el.className.indexOf('edit-btn') >= 0) openEditModal(id);
-  if (el.className.indexOf('del-btn')  >= 0) delRow(id);
-});
+      .dealerbar label {
+        font-size: 11px
+      }
 
-gid('allCb').addEventListener('change', function() {
-  var v = this.checked; for (var i=0;i<rows.length;i++) rows[i].chk=v; renderTable();
-});
+      .dealer-inp {
+        font-size: 12px;
+        padding: 4px 8px
+      }
 
-function removeChecked() {
-  var kept=[], before=rows.length;
-  for (var i=0;i<rows.length;i++) if (!rows[i].chk) kept.push(rows[i]);
-  rows=kept; renderTable();
-  toast((before-rows.length)+' row(s) removed','warn');
-}
+      .toolbar {
+        padding: 6px 12px
+      }
 
-function delRow(id) {
-  var kept=[];
-  for (var i=0;i<rows.length;i++) if (rows[i].id!==id) kept.push(rows[i]);
-  rows=kept; renderTable(); toast('Row removed','warn');
-}
+      .res-title {
+        font-size: 12px
+      }
 
-document.querySelector('thead').addEventListener('click', function(e) {
-  var th = e.target; while (th && th.tagName !== 'TH') th=th.parentNode;
-  if (!th || th.className.indexOf('sort')<0) return;
-  var col = th.getAttribute('data-col'); if (!col) return;
-  if (sortCol===col) sortAsc=!sortAsc; else { sortCol=col; sortAsc=true; }
-  rows.sort(function(a,b) {
-    if (col==='nb') { var av=parseInt(a.nb,10)||0,bv=parseInt(b.nb,10)||0; return sortAsc?av-bv:bv-av; }
-    return sortAsc ? String(a[col]||'').localeCompare(String(b[col]||''))
-                   : String(b[col]||'').localeCompare(String(a[col]||''));
-  });
-  renderTable();
-});
+      .res-sub {
+        display: none
+      }
 
-function openAddModal() {
-  editIdx=-1; gid('modalTitle').textContent='Add New Design';
-  gid('mName').value=''; gid('mSurf').value=''; gid('mNum').value='';
-  gid('modalOv').classList.add('open');
-  setTimeout(function(){ gid('mName').focus(); }, 80);
-}
+      .tarea {
+        padding: 8px
+      }
 
-function openEditModal(id) {
-  var r = rowById(id); if (!r) return;
-  editIdx=-1;
-  for (var i=0;i<catalog.length;i++) { if (catalog[i].n===r.n) { editIdx=i; break; } }
-  gid('modalTitle').textContent='Edit Design';
-  gid('mName').value=r.n; gid('mSurf').value=r.s; gid('mNum').value=r.nb;
-  gid('modalOv').classList.add('open');
-}
+      .expbar {
+        padding: 8px 12px;
+        gap: 6px
+      }
 
-function closeModal() { gid('modalOv').classList.remove('open'); editIdx=-1; }
+      .exp-info {
+        font-size: 11px
+      }
 
-function saveModal() {
-  var name=gid('mName').value.trim().toUpperCase();
-  var surf=gid('mSurf').value.trim();
-  var num =gid('mNum').value.trim();
-  if (!name) { toast('Design name is required','err'); return; }
-  if (!surf) { toast('Surface is required','err'); return; }
-  if (!num)  { toast('Numbar is required','err'); return; }
-  if (editIdx < 0) {
-    for (var i=0;i<catalog.length;i++) { if (catalog[i].n===name) { toast('"'+name+'" already exists!','err'); return; } }
-    catalog.push({n:name,s:surf,nb:num});
-    gid('bdgTotal').textContent=catalog.length+' designs';
-    renderList(); closeModal(); toast('Added: '+name,'ok');
-  } else {
-    var old=catalog[editIdx].n; catalog[editIdx]={n:name,s:surf,nb:num};
-    for (var j=0;j<rows.length;j++) { if (rows[j].n===old) { rows[j].n=name; rows[j].s=surf; rows[j].nb=num; } }
-    gid('bdgTotal').textContent=catalog.length+' designs';
-    renderList(); renderTable(); closeModal(); toast('Updated: '+name,'ok');
-  }
-}
+      .btn {
+        padding: 6px 10px;
+        font-size: 11px
+      }
 
-function closeConfirm() { gid('confOv').classList.remove('open'); }
+      .exp-btns {
+        gap: 6px
+      }
 
-function doExcel() {
-  if (!rows.length) return;
-  if (typeof XLSX === 'undefined') { toast('Excel library not loaded','err'); return; }
-  syncQty();
-  var dealer=gid('dealerInp').value.trim();
-  var date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
-  var total=0; for (var i=0;i<rows.length;i++) total+=(rows[i].qty||1);
-  var wsArr=[];
-  if (dealer) wsArr.push(['DEALER NAME:',dealer]);
-  wsArr.push(['EXPORT DATE:',date],['TOTAL DESIGNS:',rows.length],['TOTAL QTY:',total],[]);
-  wsArr.push(['SR.','DESIGN NAME','SURFACE','NUMBAR','QTY']);
-  for (var i=0;i<rows.length;i++) { var r=rows[i]; wsArr.push([i+1,r.n,r.s,r.nb,r.qty||1]); }
-  var wb=XLSX.utils.book_new(), ws=XLSX.utils.aoa_to_sheet(wsArr);
-  ws['!cols']=[{wch:16},{wch:36},{wch:18},{wch:10},{wch:8}];
-  var hr=dealer?6:5, hs={font:{bold:true,color:{rgb:'FFFFFF'},sz:11},fill:{fgColor:{rgb:'1A3A5C'}},alignment:{horizontal:'center'}};
-  var cc=['A','B','C','D','E'];
-  for (var c=0;c<cc.length;c++) { var cl=cc[c]+hr; if (ws[cl]) ws[cl].s=hs; }
-  if (dealer && ws['B1']) ws['B1'].s={font:{bold:true,sz:14,color:{rgb:'1A3A5C'}},alignment:{horizontal:'left'}};
-  XLSX.utils.book_append_sheet(wb,ws,'Design Details');
-  var surfs={};
-  for (var i=0;i<rows.length;i++) { var sv=rows[i].s||'Other'; surfs[sv]=(surfs[sv]||0)+(rows[i].qty||1); }
-  var sa=[];
-  if (dealer) sa.push(['DEALER:',dealer],[]);
-  sa.push(['Total Designs:',rows.length],['Total Qty:',total],['Date:',date],[],['Surface','Total Qty']);
-  var sk=Object.keys(surfs); for (var i=0;i<sk.length;i++) sa.push([sk[i],surfs[sk[i]]]);
-  var ws2=XLSX.utils.aoa_to_sheet(sa); ws2['!cols']=[{wch:22},{wch:14}];
-  XLSX.utils.book_append_sheet(wb,ws2,'Summary');
-  XLSX.writeFile(wb,'Design_Details_'+new Date().toISOString().slice(0,10)+'.xlsx');
-  toast('Excel exported','ok');
-}
+      thead th {
+        padding: 8px 8px;
+        font-size: 10px
+      }
 
-function doPDF() {
-  if (!rows.length) return;
-  syncQty();
-  var dealer=gid('dealerInp').value.trim();
-  var title=dealer||'Design Details Report';
-  var date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
-  var total=0; for (var i=0;i<rows.length;i++) total+=(rows[i].qty||1);
-  var trs='';
-  for (var i=0;i<rows.length;i++) {
-    var r=rows[i], bg=i%2?'#f5f9fd':'#fff';
-    trs+='<tr style="background:'+bg+'">'+
-      '<td style="text-align:center;color:#888;font-weight:600;padding:8px 10px;border:1px solid #dde3ea">'+(i+1)+'</td>'+
-      '<td style="font-weight:600;color:#1a3a5c;padding:8px 12px;border:1px solid #dde3ea">'+esc(r.n)+'</td>'+
-      '<td style="text-align:center;padding:8px 10px;border:1px solid #dde3ea">'+esc(r.s)+'</td>'+
-      '<td style="text-align:center;font-family:monospace;color:#375623;font-weight:700;padding:8px 10px;border:1px solid #dde3ea">'+esc(String(r.nb))+'</td>'+
-      '<td style="text-align:center;font-weight:700;color:#1a3a5c;padding:8px 10px;border:1px solid #dde3ea">'+(r.qty||1)+'</td></tr>';
-  }
-  var badge=dealer?'<div style="display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:2px 12px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">DEALER</div>':'';
-  var sub=dealer?'Design Details Report &middot; Generated on '+date:'Generated on '+date;
-  var metaD=dealer?'<span>Dealer: <strong style="color:#1a3a5c">'+esc(dealer)+'</strong></span>':'';
-  var foot=dealer?'Dealer: '+esc(dealer)+' &middot; Design Manager':'Design Manager Report';
-  var htmlContent =
-    '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(title)+'</title>'+
-    '<style>*{box-sizing:border-box;margin:0;padding:0}'+
-    'body{font-family:"Segoe UI",Arial,sans-serif;padding:24px;color:#222}'+
-    '.hdr{background:linear-gradient(135deg,#1a3a5c,#2e74b5);color:#fff;padding:22px 28px;border-radius:8px 8px 0 0}'+
-    '.hdr h1{font-size:26px;font-weight:800;line-height:1.2}'+
-    '.hdr p{font-size:12px;opacity:.75;margin-top:5px}'+
-    '.meta{background:#ebf3fb;padding:10px 28px;border:1px solid #bdd7ee;border-top:none;display:flex;gap:24px;font-size:12px;color:#444;flex-wrap:wrap}'+
-    'table{width:100%;border-collapse:collapse}'+
-    'thead th{background:#1a3a5c;color:#fff;padding:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:1px solid #0d2440}'+
-    '.foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:8px;border-top:1px solid #dde3ea}'+
-    '@media print{.np{display:none}body{padding:10mm 15mm}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'+
-    '</style></head><body>'+
-    '<div class="hdr">'+badge+'<h1>'+esc(title)+'</h1><p>'+sub+'</p></div>'+
-    '<div class="meta">'+metaD+
-      '<span>Total Designs: <strong style="color:#1a3a5c">'+rows.length+'</strong></span>'+
-      '<span>Total Qty: <strong style="color:#1a3a5c">'+total+'</strong></span>'+
-      '<span>Date: <strong style="color:#1a3a5c">'+date+'</strong></span></div>'+
-    '<table><thead><tr>'+
-      '<th style="width:40px">SR.</th><th style="text-align:left">DESIGN NAME</th>'+
-      '<th>SURFACE</th><th>NUMBAR</th><th>QTY</th></tr></thead>'+
-    '<tbody>'+trs+'</tbody>'+
-    '<tfoot><tr>'+
-      '<td colspan="4" style="text-align:right;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#1a3a5c">TOTAL QTY</td>'+
-      '<td style="text-align:center;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#375623;font-size:16px">'+total+'</td>'+
-    '</tr></tfoot></table>'+
-    '<div class="foot"><span>'+foot+'</span><span>'+rows.length+' item'+(rows.length!==1?'s':'')+' | Total Qty: '+total+'</span></div>'+
-    '<br></body></html>';
+      tbody td {
+        padding: 7px 8px;
+        font-size: 11px
+      }
 
-  var iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none;z-index:-1';
-  document.body.appendChild(iframe);
-  var idoc = iframe.contentWindow.document;
-  idoc.open(); idoc.write(htmlContent); idoc.close();
-  iframe.contentWindow.focus();
-  setTimeout(function(){
-    iframe.contentWindow.print();
-    setTimeout(function(){ document.body.removeChild(iframe); }, 2000);
-  }, 500);
-  toast('PDF preview opened','ok');
-}
+      .qty-inp {
+        width: 52px;
+        font-size: 11px
+      }
+    }
+  </style>
+</head>
 
-gid('srchInp').addEventListener('input', function(){ searchQ=this.value; gid('srchClr').style.display=searchQ?'block':'none'; renderList(); });
-gid('srchClr').addEventListener('click', function(){ searchQ=''; gid('srchInp').value=''; this.style.display='none'; renderList(); });
-gid('btnClrAll').addEventListener('click', clearAll);
-gid('showBtn').addEventListener('click', showResults);
-gid('addBtn').addEventListener('click', openAddModal);
-gid('selAllBtn').addEventListener('click', selectVisible);
-gid('rmSelBtn').addEventListener('click', removeChecked);
-gid('xlBtn').addEventListener('click', doExcel);
-gid('pdfBtn').addEventListener('click', doPDF);
-gid('modalX').addEventListener('click', closeModal);
-gid('modalCancel').addEventListener('click', closeModal);
-gid('modalSave').addEventListener('click', saveModal);
-gid('confCancel').addEventListener('click', closeConfirm);
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeModal(); closeConfirm(); }
-  if ((e.ctrlKey||e.metaKey) && e.key==='Enter' && gid('modalOv').classList.contains('open')) saveModal();
-});
+<body>
 
-renderList();
-renderTable();
+  <div class="topbar">
+    <div>
+      <h1>&#127912; Design Manager</h1>
+      <p>Search &middot; Select &middot; Add/Edit &middot; Export PDF &amp; Excel</p>
+    </div>
+    <div class="badges"><span class="badge" id="bdgTotal">825 designs</span><span class="badge" id="bdgSel">0
+        selected</span></div>
+  </div>
 
-/* ── MOBILE PANEL TOGGLE ── */
-var hamBtn      = gid('hamBtn');
-var closePanelBtn = gid('closePanelBtn');
-var leftPanel   = document.querySelector('.left');
-var leftOverlay = gid('leftOverlay');
+  <div class="dealerbar">
+    <label>&#128100; Dealer Name:</label>
+    <input type="text" class="dealer-inp" id="dealerInp" placeholder="Enter dealer / party name..." autocomplete="off">
+    <span class="dealer-hint">Appears as heading in PDF &amp; Excel exports</span>
+  </div>
 
-function openPanel() {
-  leftPanel.classList.add('open');
-  leftOverlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closePanel() {
-  leftPanel.classList.remove('open');
-  leftOverlay.classList.remove('open');
-  document.body.style.overflow = '';
-}
+  <div class="left-overlay" id="leftOverlay"></div>
+  <div class="body">
+    <div class="left">
+      <div class="panel-hdr"><span>&#128269; Search &amp; Select</span><button class="close-left"
+          id="closePanelBtn">&#x2715;</button></div>
+      <div class="srch-wrap">
+        <span class="srch-ico">&#128269;</span>
+        <input class="srch-inp" id="srchInp" type="text" placeholder="Type to filter: ab, brown, gloss..."
+          autocomplete="off">
+        <button class="srch-clr" id="srchClr">&#x2715;</button>
+      </div>
+      <div class="srch-stats" id="srchStats">Showing all 825 designs</div>
+      <div class="dlist" id="dlist"></div>
+      <div class="chips-sec">
+        <div class="chips-hdr">
+          <span class="chips-count" id="chipsCount">0 selected</span>
+          <button class="btn-clrall" id="btnClrAll">&#x2715; Clear All</button>
+        </div>
+        <div class="chips-wrap" id="chipsWrap"></div>
+      </div>
+      <div class="actbar">
+        <button class="btn b-blue" id="showBtn" disabled>&#9654; SHOW</button>
+        <button class="btn b-green" id="addBtn">&#xff0b; Add Design</button>
+        <button class="btn b-out" id="selAllBtn">&#9745; Select All</button>
+      </div>
+    </div>
 
-if (hamBtn)       hamBtn.addEventListener('click', openPanel);
-if (closePanelBtn) closePanelBtn.addEventListener('click', closePanel);
-if (leftOverlay)  leftOverlay.addEventListener('click', closePanel);
+    <div class="right">
+      <div class="toolbar">
+        <div class="tleft">
+          <button class="ham-btn" id="hamBtn" title="Open search panel">&#9776; Designs</button>
+          <span class="res-title" id="resTitle">Design Details</span>
+          <span class="res-sub" id="resSub">Select designs and click SHOW</span>
+        </div>
+        <div class="tright">
+          <button class="btn b-red" id="rmSelBtn" style="display:none">&#128465; Remove Selected</button>
+        </div>
+      </div>
+      <div class="tarea">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:36px"><input type="checkbox" id="allCb" title="Select all"></th>
+              <th style="width:40px" class="sort" data-col="idx">#</th>
+              <th class="th-name sort" data-col="n">Design Name</th>
+              <th class="sort" data-col="s">Surface</th>
+              <th class="sort" data-col="nb">Numbar</th>
+              <th style="width:80px">Qty</th>
+              <th style="width:88px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="expbar">
+        <span class="exp-info" id="expInfo">No items to export</span>
+        <div class="exp-btns">
+          <button class="btn b-out" id="xlBtn" disabled>&#128202; Excel</button>
+          <button class="btn b-orange" id="pdfBtn" disabled>&#128196; PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-/* Close panel when user clicks SHOW on mobile */
-var origShow = gid('showBtn');
-if (origShow) {
-  origShow.addEventListener('click', function() {
-    if (window.innerWidth <= 900) closePanel();
-  });
-}
+  <div class="overlay" id="modalOv">
+    <div class="modal">
+      <div class="modal-hdr">
+        <h3 id="modalTitle">Add New Design</h3><button class="modal-x" id="modalX">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <div class="mf"><label>Design Name *</label><input id="mName" type="text" placeholder="e.g. AURORA GOLD"
+            autocomplete="off">
+          <div class="hint">Saved in uppercase</div>
+        </div>
+        <div class="mf"><label>Surface *</label><input id="mSurf" type="text" placeholder="e.g. GLOSY, MATT, CRV - 1"
+            autocomplete="off"></div>
+        <div class="mf"><label>Numbar *</label><input id="mNum" type="text" placeholder="e.g. 2299" autocomplete="off">
+        </div>
+      </div>
+      <div class="modal-foot"><button class="btn b-out" id="modalCancel">Cancel</button><button class="btn b-green"
+          id="modalSave">&#128190; Save</button></div>
+    </div>
+  </div>
 
-</script>
+  <div class="overlay" id="confOv">
+    <div class="confirm-box">
+      <h3 id="confTitle">Confirm</h3>
+      <p id="confMsg">Are you sure?</p>
+      <div class="confirm-btns"><button class="btn b-out" id="confCancel">Cancel</button><button class="btn b-red"
+          id="confOk">Delete</button></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toastEl"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    /* All 825 designs &mdash; non-ASCII chars encoded as \uXXXX so file works from file:// */
+    var SEED = [
+      { n: 'ANTI SKY', s: 'GLOSY -', nb: '2001' },
+      { n: 'ANTICO CREMA', s: 'GLOSY -', nb: '2002' },
+      { n: 'ANTICO IVORY', s: 'GLOSY -', nb: '2003' },
+      { n: 'ANTISKY WHITE', s: 'GLOSY -', nb: '2004' },
+      { n: 'ARIANA BEIGE', s: 'GLOSY -', nb: '2005' },
+      { n: 'ARMANO BEIGE', s: 'GLOSY -', nb: '2006' },
+      { n: 'ARMANO BROWN', s: 'GLOSY -', nb: '2007' },
+      { n: 'ARMANO CREMA', s: 'GLOSY -', nb: '2008' },
+      { n: 'ARMANO LIGHT', s: 'GLOSY -', nb: '2009' },
+      { n: 'AURORA IVORY', s: 'GLOSY -', nb: '2010' },
+      { n: 'BRAVE BEIGE', s: 'GLOSY -', nb: '2011' },
+      { n: 'BURBERY BEIGE', s: 'GLOSY -', nb: '2012' },
+      { n: 'CANBERA BIANCO', s: 'GLOSY -', nb: '2013' },
+      { n: 'CANBERA IVORY', s: 'GLOSY -', nb: '2014' },
+      { n: 'CARDOSO BIANCO', s: 'GLOSY -', nb: '2015' },
+      { n: 'CIRCUS BEIGE', s: 'GLOSY -', nb: '2016' },
+      { n: 'CIRCUS GREY', s: 'GLOSY -', nb: '2017' },
+      { n: 'CIRCUS IVORY', s: 'GLOSY -', nb: '2018' },
+      { n: 'CLOU BEIGE', s: 'GLOSY -', nb: '2019' },
+      { n: 'CLOUD BROWN', s: 'GLOSY -', nb: '2020' },
+      { n: 'CRESTOLA CREMA', s: 'GLOSY -', nb: '2021' },
+      { n: 'DAINO GRIS', s: 'GLOSY -', nb: '2022' },
+      { n: 'DAMESTA GREY', s: 'GLOSY -', nb: '2023' },
+      { n: 'DEVCI GREY', s: 'GLOSY -', nb: '2024' },
+      { n: 'DEVCI GRIS', s: 'GLOSY -', nb: '2025' },
+      { n: 'ETOILE CREMA', s: 'GLOSY -', nb: '2026' },
+      { n: 'ETOILE BROWN', s: 'GLOSY -', nb: '2027' },
+      { n: 'ETOILE GREY', s: 'GLOSY -', nb: '2028' },
+      { n: 'ETOILE LIGHT GREY', s: 'GLOSY -', nb: '2029' },
+      { n: 'ETOILE NATURAL', s: 'GLOSY -', nb: '2030' },
+      { n: 'ESPERDA GREY', s: 'GLOSY -', nb: '2031' },
+      { n: 'FENDER BROWN', s: 'GLOSY -', nb: '2032' },
+      { n: 'FENDER LIGHT', s: 'GLOSY -', nb: '2033' },
+      { n: 'FENDER NATURAL', s: 'GLOSY -', nb: '2034' },
+      { n: 'FLAVIA', s: 'GLOSY -', nb: '2035' },
+      { n: 'FLAVIA GREY', s: 'GLOSY -', nb: '2036' },
+      { n: 'HORDIX BROWN', s: 'GLOSY -', nb: '2037' },
+      { n: 'HORDIX GREY', s: 'GLOSY -', nb: '2038' },
+      { n: 'IMPERIAL GREY', s: 'GLOSY -', nb: '2039' },
+      { n: 'LISTONI BEIGE', s: 'GLOSY -', nb: '2040' },
+      { n: 'LISTONI  BROWN', s: 'GLOSY -', nb: '2041' },
+      { n: 'LISTONI  CREMA', s: 'GLOSY -', nb: '2042' },
+      { n: 'LYON LIGHT', s: 'GLOSY -', nb: '2043' },
+      { n: 'MISTERO CHOCO', s: 'GLOSY -', nb: '2044' },
+      { n: 'MISTERO  LIGHT', s: 'GLOSY -', nb: '2045' },
+      { n: 'MISTERO NATURAL', s: 'GLOSY -', nb: '2046' },
+      { n: 'MISTERO  BROWN', s: 'GLOSY -', nb: '2047' },
+      { n: 'MOCHA BROWN', s: 'GLOSY -', nb: '2048' },
+      { n: 'MOCHA GREY', s: 'GLOSY -', nb: '2049' },
+      { n: 'MOCHA LIGHT GREY', s: 'GLOSY -', nb: '2050' },
+      { n: 'MOZZAICO BIANCO', s: 'GLOSY -', nb: '2051' },
+      { n: 'MOZZAICO GREY', s: 'GLOSY -', nb: '2052' },
+      { n: 'NORDIC GREY', s: 'GLOSY -', nb: '2053' },
+      { n: 'NORDIC OLIVE', s: 'GLOSY -', nb: '2054' },
+      { n: 'ORACLE GRIS', s: 'GLOSY -', nb: '2055' },
+      { n: 'QUARTZ BROWN', s: 'GLOSY -', nb: '2056' },
+      { n: 'QUARTZ CREMA', s: 'GLOSY -', nb: '2057' },
+      { n: 'REGAL TRAVENTINO GREY', s: 'GLOSY -', nb: '2058' },
+      { n: 'REYCERA GREY', s: 'GLOSY -', nb: '2059' },
+      { n: 'REYCERA GRIS', s: 'GLOSY -', nb: '2060' },
+      { n: 'REYCERA  RASE', s: 'GLOSY -', nb: '2061' },
+      { n: 'RODUM BROWN', s: 'GLOSY -', nb: '2062' },
+      { n: 'RODUM NATURAL', s: 'GLOSY -', nb: '2063' },
+      { n: 'RODUM NATURAL DARK', s: 'GLOSY -', nb: '2064' },
+      { n: 'SIERRA BEIGE', s: 'GLOSY -', nb: '2065' },
+      { n: 'SIERRA BROWN', s: 'GLOSY -', nb: '2066' },
+      { n: 'SOFT BROWN', s: 'GLOSY -', nb: '2067' },
+      { n: 'SOFT DARK GREY', s: 'GLOSY -', nb: '2068' },
+      { n: 'SOFT LIGHT GREY', s: 'GLOSY -', nb: '2069' },
+      { n: 'ALBASTRO NATURAL', s: 'GLOSY -', nb: '2075' },
+      { n: 'ARABESCATO CREAM', s: 'GLOSY -', nb: '2076' },
+      { n: 'ARABESCATO  BROWN', s: 'GLOSY -', nb: '2077' },
+      { n: 'ARKOSE', s: 'GLOSY -', nb: '2078' },
+      { n: 'ARMANI LIGHT', s: 'GLOSY -', nb: '2079' },
+      { n: 'ARMANI NERO', s: 'GLOSY -', nb: '2080' },
+      { n: 'ASIA SILVER', s: 'GLOSY -', nb: '2081' },
+      { n: 'ARABESCATO NATURAL', s: 'GLOSY -', nb: '2082' },
+      { n: 'BOTTOCHINO BEIGE', s: 'GLOSY -', nb: '2083' },
+      { n: 'BRASIL GREY', s: 'GLOSY -', nb: '2084' },
+      { n: 'BRAWLEY LIGHT', s: 'GLOSY -', nb: '2085' },
+      { n: 'BROKEN BRECIA', s: 'GLOSY -', nb: '2086' },
+      { n: 'CALCATTA AQUA', s: 'GLOSY -', nb: '2087' },
+      { n: 'CALCATTA BLUE', s: 'GLOSY -', nb: '2088' },
+      { n: 'CAMBRIA BEIGE', s: 'GLOSY -', nb: '2089' },
+      { n: 'CLASSIC BRECCIA', s: 'GLOSY -', nb: '2090' },
+      { n: 'COLONIAL CHOCO', s: 'GLOSY -', nb: '2091' },
+      { n: 'CORAL ONYX', s: 'GLOSY -', nb: '2092' },
+      { n: 'CRISTAM BEIGE', s: 'GLOSY -', nb: '2093' },
+      { n: 'CASTON BLACK', s: 'GLOSY -', nb: '2094' },
+      { n: 'DARK SPIDER', s: 'GLOSY -', nb: '2095' },
+      { n: 'DYNA PEARL', s: 'GLOSY -', nb: '2096' },
+      { n: 'ELECTRA DARK', s: 'GLOSY -', nb: '2097' },
+      { n: 'ELECTRA LIGHT', s: 'GLOSY -', nb: '2098' },
+      { n: 'ELEGANT CREMA', s: 'GLOSY -', nb: '2099' },
+      { n: 'EXOTIC AMPRADOR', s: 'GLOSY -', nb: '2100' },
+      { n: 'ELICE CHOCO', s: 'GLOSY -', nb: '2101' },
+      { n: 'FABERO CHOCO', s: 'GLOSY -', nb: '2102' },
+      { n: 'FABERO GREY', s: 'GLOSY -', nb: '2103' },
+      { n: 'FANTASY BLUE', s: 'GLOSY -', nb: '2104' },
+      { n: 'GLACIER ONYX', s: 'GLOSY -', nb: '2105' },
+      { n: 'HALLEY DARK', s: 'GLOSY -', nb: '2106' },
+      { n: 'HAMLET BROWN', s: 'GLOSY -', nb: '2107' },
+      { n: 'HAWANA NATURAL', s: 'GLOSY -', nb: '2108' },
+      { n: 'IMPERIAL DYNA BLUE', s: 'GLOSY -', nb: '2109' },
+      { n: 'IMPERIAL DYNA BEIGE', s: 'GLOSY -', nb: '2110' },
+      { n: 'JUPITER MULTY', s: 'GLOSY -', nb: '2111' },
+      { n: 'LEVIS MULTY', s: 'GLOSY -', nb: '2112' },
+      { n: 'LIGHT MARFIL', s: 'GLOSY -', nb: '2113' },
+      { n: 'LIZARD COFFEE', s: 'GLOSY -', nb: '2114' },
+      { n: 'MARFIL BEIGE', s: 'GLOSY -', nb: '2115' },
+      { n: 'MARBO NATURAL', s: 'GLOSY -', nb: '2116' },
+      { n: 'NATURAL ONYX SNOW', s: 'GLOSY -', nb: '2117' },
+      { n: 'OCEAN BEIGE', s: 'GLOSY -', nb: '2118' },
+      { n: 'ONYX INFERNO', s: 'GLOSY -', nb: '2119' },
+      { n: 'ONYX VANILA', s: 'GLOSY -', nb: '2120' },
+      { n: 'OPERA AZUL', s: 'GLOSY -', nb: '2121' },
+      { n: 'OYSTER BROWN', s: 'GLOSY -', nb: '2122' },
+      { n: 'AREL DOVE', s: 'GLOSY -', nb: '2137' },
+      { n: 'CINERER ONYX', s: 'GLOSY -', nb: '2138' },
+      { n: 'CORD MARFIL', s: 'GLOSY -', nb: '2139' },
+      { n: 'DOLOMITE ONYX', s: 'GLOSY -', nb: '2140' },
+      { n: 'LUSTROUS MULTY', s: 'GLOSY -', nb: '2141' },
+      { n: 'MICHENGELO', s: 'GLOSY -', nb: '2142' },
+      { n: 'PARIS DREAMY', s: 'GLOSY -', nb: '2143' },
+      { n: 'PERADISO GOLD', s: 'GLOSY -', nb: '2144' },
+      { n: 'PIATRA BROWN', s: 'GLOSY -', nb: '2145' },
+      { n: 'PIATRA GREY', s: 'GLOSY -', nb: '2146' },
+      { n: 'SARONA NATURAL', s: 'GLOSY -', nb: '2147' },
+      { n: 'SILVER GRIS', s: 'GLOSY -', nb: '2148' },
+      { n: 'SILVER ROOT', s: 'GLOSY -', nb: '2149' },
+      { n: 'SMOKY HAZEL', s: 'GLOSY -', nb: '2150' },
+      { n: 'SMOKY ROSE', s: 'GLOSY -', nb: '2151' },
+      { n: 'STARRY CHOCO', s: 'GLOSY -', nb: '2152' },
+      { n: 'STARRY CREMA', s: 'GLOSY -', nb: '2153' },
+      { n: 'STARRY GREY', s: 'GLOSY -', nb: '2154' },
+      { n: 'STARRY SILVER', s: 'GLOSY -', nb: '2155' },
+      { n: 'TILET MARBLE', s: 'GLOSY -', nb: '2156' },
+      { n: 'TRUST ONYX', s: 'GLOSY -', nb: '2157' },
+      { n: 'TUNDRA BEIGE', s: 'GLOSY -', nb: '2158' },
+      { n: 'TUNDRA CREMA', s: 'GLOSY -', nb: '2159' },
+      { n: 'BRANCO WHITE', s: 'GLOSY -', nb: '2160' },
+      { n: 'ICE DINOVA', s: 'GLOSY -', nb: '2161' },
+      { n: 'NAVELLE SILK', s: 'GLOSY -', nb: '2162' },
+      { n: 'SILVIA GOLD', s: 'GLOSY -', nb: '2163' },
+      { n: 'SOFITA REY', s: 'GLOSY -', nb: '2164' },
+      { n: 'STATUARIO CARRARA', s: 'GLOSY -', nb: '2165' },
+      { n: 'STATUARIO ENFOLD', s: 'GLOSY -', nb: '2166' },
+      { n: 'STATUARIO SILIVIA', s: 'GLOSY -', nb: '2167' },
+      { n: 'STATUARIO VIOLA', s: 'GLOSY -', nb: '2168 A' },
+      { n: 'ALEX WHITE', s: 'GLOSY -', nb: '2168' },
+      { n: 'ANGELO SATUARIO', s: 'GLOSY -', nb: '2169' },
+      { n: 'ELITE SATUARIO', s: 'GLOSY -', nb: '2170' },
+      { n: 'HIMALAYA WHITE', s: 'GLOSY -', nb: '2171' },
+      { n: 'HONEY SATUARIO', s: 'GLOSY -', nb: '2172' },
+      { n: 'NIVIA WHITE', s: 'GLOSY -', nb: '2173' },
+      { n: 'ONYX CLOWDY', s: 'GLOSY -', nb: '2174' },
+      { n: 'PEARL ONYX GREY', s: 'GLOSY -', nb: '2175' },
+      { n: 'PLATINA WHITE', s: 'GLOSY -', nb: '2176' },
+      { n: 'ROYAL SATUARIO', s: 'GLOSY -', nb: '2177' },
+      { n: 'SATUARIO FANTA', s: 'GLOSY -', nb: '2178' },
+      { n: 'SATUARIO  NATUARAL', s: 'GLOSY -', nb: '2179' },
+      { n: 'SERENIA', s: 'GLOSY -', nb: '2180' },
+      { n: 'SHINE SATUARIO', s: 'GLOSY -', nb: '2181' },
+      { n: 'ANTIQUE SATUARIO', s: 'GLOSY -', nb: '2182' },
+      { n: 'SKY ONYX', s: 'GLOSY -', nb: '2183' },
+      { n: 'SATUARIO VIVIAN', s: 'GLOSY -', nb: '2184' },
+      { n: 'TIGER ONYX', s: 'GLOSY -', nb: '2185' },
+      { n: 'ATLANTIC WHITE', s: 'GLOSY -', nb: '2186' },
+      { n: 'ANTRARCITA CREMA', s: 'GLOSY -', nb: '2187' },
+      { n: 'ANTRARCITA  GREY', s: 'GLOSY -', nb: '2188' },
+      { n: 'CALACATTA VIOLA', s: 'GLOSY -', nb: '2189' },
+      { n: 'CARLO ONYX BEIGE', s: 'GLOSY -', nb: '2190' },
+      { n: 'CARLO ONYX  ICE', s: 'GLOSY -', nb: '2191' },
+      { n: 'CARLO ONYX NATURAL', s: 'GLOSY -', nb: '2192' },
+      { n: 'CUPAR WHITE', s: 'GLOSY -', nb: '2193' },
+      { n: 'HAWAI WHITE', s: 'GLOSY -', nb: '2194' },
+      { n: 'OLGA ONYX BIANCO', s: 'GLOSY -', nb: '2195' },
+      { n: 'OLGA ONYX  GRIES', s: 'GLOSY -', nb: '2196' },
+      { n: 'PRISMATIC STATUARIO', s: 'GLOSY -', nb: '2197' },
+      { n: 'SWISS STATUARIO', s: 'GLOSY -', nb: '2198' },
+      { n: 'TROPIC GREY', s: 'GLOSY -', nb: '2205' },
+      { n: 'TROPIC WHITE', s: 'GLOSY -', nb: '2206' },
+      { n: 'BERLIN NATURAL', s: 'GLOSY -', nb: '2207' },
+      { n: 'MUST STATUARIO', s: 'GLOSY -', nb: '2208' },
+      { n: 'CASSINI CARRARA', s: 'GLOSY -', nb: '2209' },
+      { n: 'CASSINI CARRARA GREY', s: 'GLOSY -', nb: '2210' },
+      { n: 'ROMAN STATUARIO', s: 'GLOSY -', nb: '2211' },
+      { n: 'WHITE BLUE', s: 'GLOSY -', nb: '2212' },
+      { n: 'WILLIM GREY LIGHT', s: 'GLOSY -', nb: '2213' },
+      { n: 'ALTIMO WHITE', s: 'EN - GL -', nb: '1001' },
+      { n: 'ANTIVA THAMOS', s: 'EN - GL -', nb: '1002' },
+      { n: 'ARNO ANTIC', s: 'EN - GL -', nb: '1003' },
+      { n: 'ATTACHE LAVISH', s: 'EN - GL -', nb: '1004' },
+      { n: 'BIANCO ANGELICA', s: 'EN - GL -', nb: '1005' },
+      { n: 'BORGIA NATURAL', s: 'EN - GL -', nb: '1006' },
+      { n: 'BRECCIA AZURE', s: 'EN - GL -', nb: '1007' },
+      { n: 'BRECCIA HUDSON', s: 'EN - GL -', nb: '1008' },
+      { n: 'BRERA PULIDO', s: 'EN - GL -', nb: '1009' },
+      { n: 'BITTOCHINO NATURAL', s: 'EN - GL -', nb: '1010' },
+      { n: 'CARIBBEAN', s: 'EN - GL -', nb: '1011' },
+      { n: 'CARPEIA GOLD', s: 'EN - GL -', nb: '1012' },
+      { n: 'CORCHIA GOLD', s: 'EN - GL -', nb: '1013' },
+      { n: 'COSIMA CASSINI', s: 'EN - GL -', nb: '1014' },
+      { n: 'CRSOLA ONYX', s: 'EN - GL -', nb: '1015' },
+      { n: 'CARRARA WHITE', s: 'EN - GL -', nb: '1016' },
+      { n: 'CASELONIA BLACK', s: 'EN - GL -', nb: '1017' },
+      { n: 'CASELONIA  BLUE', s: 'EN - GL -', nb: '1018' },
+      { n: 'CLASSIC DYNA BEIGE', s: 'EN - GL -', nb: '1019' },
+      { n: 'DOMUS TRAVERTINO', s: 'EN - GL -', nb: '1020' },
+      { n: 'EVOCA GREY', s: 'EN - GL -', nb: '1021' },
+      { n: 'FENIX  ONYX', s: 'EN - GL -', nb: '1022' },
+      { n: 'FOREST SATUARIO', s: 'EN - GL -', nb: '1023' },
+      { n: 'FOREVER WHITE', s: 'EN - GL -', nb: '1024' },
+      { n: 'GRESIA CARRARA', s: 'EN - GL -', nb: '1025' },
+      { n: 'HIMENTO CALACATTA', s: 'EN - GL -', nb: '1026' },
+      { n: 'JORDEN GREY', s: 'EN - GL -', nb: '1027' },
+      { n: 'LASA GOLD ONYX', s: 'EN - GL -', nb: '1028' },
+      { n: 'LORENT GREY', s: 'EN - GL -', nb: '1029' },
+      { n: 'LORENT GREY LIGHT', s: 'EN - GL -', nb: '1030' },
+      { n: 'MODICO GREY', s: 'EN - GL -', nb: '1031' },
+      { n: 'MIST WHITE', s: 'EN - GL -', nb: '1032' },
+      { n: 'MARMOLA NATURAL', s: 'EN - GL -', nb: '1033' },
+      { n: 'NAVONA BEIGE', s: 'EN - GL -', nb: '1034' },
+      { n: 'NAVONA  GREY', s: 'EN - GL -', nb: '1035' },
+      { n: 'NUO ONYX GREY', s: 'EN - GL -', nb: '1036' },
+      { n: 'NATURAL SLATE BEIGE', s: 'EN - GL -', nb: '1037' },
+      { n: 'NEVADA BEIGE', s: 'EN - GL -', nb: '1038' },
+      { n: 'ONICA AMBAR', s: 'EN - GL -', nb: '1039' },
+      { n: 'ONYX BRUCOLI', s: 'EN - GL -', nb: '1040' },
+      { n: 'OPTICAL WHITE', s: 'EN - GL -', nb: '1041' },
+      { n: 'PARADISO BRECCIA', s: 'EN - GL -', nb: '1042' },
+      { n: 'PARAGON GOLD', s: 'EN - GL -', nb: '1043' },
+      { n: 'PEROLA CLASSIC BEIGE', s: 'EN - GL -', nb: '1044' },
+      { n: 'PULPIS  BRIGE', s: 'EN - GL -', nb: '1045' },
+      { n: 'PULPIS  BRIGE DARK', s: 'EN - GL -', nb: '1046' },
+      { n: 'PULPIS  IVORY', s: 'EN - GL -', nb: '1047' },
+      { n: 'ROSSALIA BOTINO', s: 'EN - GL -', nb: '1048' },
+      { n: 'SAJALIN ONYX', s: 'EN - GL -', nb: '1049' },
+      { n: 'STATUARIO VENETIAN', s: 'EN - GL -', nb: '1050' },
+      { n: 'SONATA  STATUARIO', s: 'EN - GL -', nb: '1051' },
+      { n: 'TUSCANI ONYX', s: 'EN - GL -', nb: '1052' },
+      { n: 'VIENA GOLD', s: 'EN - GL -', nb: '1053' },
+      { n: 'VILLA LUX PEARL', s: 'EN - GL -', nb: '1054' },
+      { n: 'VISIONER BEIGE', s: 'EN - GL -', nb: '1055' },
+      { n: 'VISIONER  BROWN', s: 'EN - GL -', nb: '1056' },
+      { n: 'VISIONER GREY', s: 'EN - GL -', nb: '1057' },
+      { n: 'ADVIK BIANCO', s: 'EN - GL -', nb: '1058' },
+      { n: 'ADVIK CREMA', s: 'EN - GL -', nb: '1059' },
+      { n: 'ADVIK  GREY', s: 'EN - GL -', nb: '1060' },
+      { n: 'ADVIK TAUPE', s: 'EN - GL -', nb: '1061' },
+      { n: 'CRUX WHITE', s: 'EN - GL -', nb: '1062' },
+      { n: 'DIAZ AQUA', s: 'EN - GL -', nb: '1063' },
+      { n: 'DIAZ GREY', s: 'EN - GL -', nb: '1064' },
+      { n: 'DORNIX BLANCO', s: 'EN - GL -', nb: '1065' },
+      { n: 'DORNIX BROWN', s: 'EN - GL -', nb: '1066' },
+      { n: 'DORNIX CREMA', s: 'EN - GL -', nb: '1067' },
+      { n: 'DORNIX GREY', s: 'EN - GL -', nb: '1068' },
+      { n: 'SUKANI WHITE', s: 'EN - GL -', nb: '1069' },
+      { n: 'WETLAND LITE', s: 'EN - GL -', nb: '1070' },
+      { n: 'ZOTICA BROWN', s: 'EN - GL -', nb: '1071' },
+      { n: 'ZOTICA  GREY', s: 'EN - GL -', nb: '1072' },
+      { n: 'ZOTICA YELLO', s: 'EN - GL -', nb: '1073' },
+      { n: 'AMAZONE BROWN', s: 'GR -', nb: '3001' },
+      { n: 'ASTROID CHOCO', s: 'GR -', nb: '3002' },
+      { n: 'BLACK BASEL', s: 'GR -', nb: '3003' },
+      { n: 'COZY BLUE', s: 'GR -', nb: '3004' },
+      { n: 'COZY  CHOCO', s: 'GR -', nb: '3005' },
+      { n: 'CRYSTAL BROWN', s: 'GR -', nb: '3006' },
+      { n: 'CRYSTAL IVORY', s: 'GR -', nb: '3007' },
+      { n: 'DOLIC BLUE', s: 'GR -', nb: '3008' },
+      { n: 'DOLIC  GREY', s: 'GR -', nb: '3009' },
+      { n: 'GLOBLE BROWN', s: 'GR -', nb: '3010' },
+      { n: 'GLOBLE CREMA', s: 'GR -', nb: '3011' },
+      { n: 'GRANITE BLUE', s: 'GR -', nb: '3012' },
+      { n: 'GRANITE BROWN', s: 'GR -', nb: '3013' },
+      { n: 'HEXA GREY', s: 'GR -', nb: '3014' },
+      { n: 'LISOBA BEIGE', s: 'GR -', nb: '3015' },
+      { n: 'LISOBA GREY', s: 'GR -', nb: '3016' },
+      { n: 'LUCIO BLUE', s: 'GR -', nb: '3017' },
+      { n: 'LUCIO  BROWN', s: 'GR -', nb: '3018' },
+      { n: 'LUCIO  SMOKE', s: 'GR -', nb: '3019' },
+      { n: 'MEGA BLACK', s: 'GR -', nb: '3020' },
+      { n: 'MEGA BROWN', s: 'GR -', nb: '3021' },
+      { n: 'MOSCHINO BLACK', s: 'GR -', nb: '3022' },
+      { n: 'NEPTUNO NATURAL', s: 'GR -', nb: '3023' },
+      { n: 'OKIYA BROWN', s: 'GR -', nb: '3024' },
+      { n: 'PLATINUM CREMA', s: 'GR -', nb: '3025' },
+      { n: 'ROSSO RIVER', s: 'GR -', nb: '3026' },
+      { n: 'STONE BEIGE', s: 'GR -', nb: '3027' },
+      { n: 'STONE SMOKE', s: 'GR -', nb: '3028' },
+      { n: 'TROPIZ BLUE', s: 'GR -', nb: '3029' },
+      { n: 'TROPIZ  BROWN', s: 'GR -', nb: '3030' },
+      { n: 'CHAIN WOOD', s: '3 D -', nb: '9001' },
+      { n: 'FLOWERS WHITE', s: '3 D -', nb: '9002' },
+      { n: 'GOLD DECORE', s: '3 D -', nb: '9003' },
+      { n: 'GOLDEN WOOD', s: '3 D -', nb: '9004' },
+      { n: 'GREY WAVY STRIPS', s: '3 D -', nb: '9005' },
+      { n: 'ILLUSION BLACK', s: '3 D -', nb: '9006' },
+      { n: 'METAL WHITE', s: '3 D -', nb: '9007' },
+      { n: 'METRIX ZIBRA WHITE', s: '3 D -', nb: '9008' },
+      { n: 'MULTI WHATER DROP', s: '3 D -', nb: '9009' },
+      { n: 'NATURAL FLOWER', s: '3 D -', nb: '9010' },
+      { n: 'PENTAGONS GREY', s: '3 D -', nb: '9011' },
+      { n: 'SOFIA DECORE', s: '3 D -', nb: '9012' },
+      { n: 'SOFT FLOWER', s: '3 D -', nb: '9013' },
+      { n: 'STICK LIGHTER', s: '3 D -', nb: '9014' },
+      { n: 'TRIANGLE GREY', s: '3 D -', nb: '9015' },
+      { n: 'TROPICAL LEAVES', s: '3 D -', nb: '9016' },
+      { n: 'WHITE FLORAL', s: '3 D -', nb: '9017' },
+      { n: 'BRECCIA AURORA', s: 'BK -', nb: '7001' },
+      { n: 'CAMRON BEIGE', s: 'BK -', nb: '7002' },
+      { n: 'FORTUNE BEIGE', s: 'BK -', nb: '7003' },
+      { n: 'KEROS WHITE', s: 'BK -', nb: '7004' },
+      { n: 'MARVERIC GREY', s: 'BK -', nb: '7005' },
+      { n: 'MAXIMUS STATUARIO', s: 'BK -', nb: '7006' },
+      { n: 'MELIBERA GREY', s: 'BK -', nb: '7007' },
+      { n: 'NATURAL EMPIRE', s: 'BK -', nb: '7008' },
+      { n: 'ONYX ICE', s: 'BK -', nb: '7009' },
+      { n: 'ONYX JADE', s: 'BK -', nb: '7010' },
+      { n: 'ORGEN WHITE', s: 'BK -', nb: '7011' },
+      { n: 'REGAL STATUARIO CLASSIC', s: 'BK -', nb: '7012' },
+      { n: 'SPARKLE NATURAL', s: 'BK -', nb: '7013' },
+      { n: 'TORONTO BEIGE', s: 'BK -', nb: '7014' },
+      { n: 'TROPICAL BLUE', s: 'BK -', nb: '7015' },
+      { n: 'PULPINO GREY', s: 'COL.FIC -', nb: '8101' },
+      { n: 'PULPINO CLOUD', s: 'COL.FIC -', nb: '8102' },
+      { n: 'PULPINO SILVER', s: 'COL.FIC -', nb: '8103' },
+      { n: 'PULPINO BROWN', s: 'COL.FIC -', nb: '8104' },
+      { n: 'PULPINO  NUT', s: 'COL.FIC -', nb: '8105' },
+      { n: 'PULPINO SEPIA', s: 'COL.FIC -', nb: '8106' },
+      { n: 'PULPINO CREEMA', s: 'COL.FIC -', nb: '8107' },
+      { n: 'PULPINO SAFFRON', s: 'COL.FIC -', nb: '8108' },
+      { n: 'PULPINO MINT', s: 'COL.FIC -', nb: '8109' },
+      { n: 'PULPINO AQUA', s: 'COL.FIC -', nb: '8110' },
+      { n: 'PULPINO BLUE', s: 'COL.FIC -', nb: '8111' },
+      { n: 'PULPINO BIANCO', s: 'COL.FIC -', nb: '8112' },
+      { n: 'ALICANTE - LT/DK/D\u00c9COR', s: 'D\u00c9COR -', nb: '8001' },
+      { n: 'ANANT- LT+ D\u00c9COR', s: 'D\u00c9COR -', nb: '8002' },
+      { n: 'ARTEX', s: 'D\u00c9COR -', nb: '8003' },
+      { n: 'ARYAN', s: 'D\u00c9COR -', nb: '8004' },
+      { n: 'BREEZA D\u00c9COR', s: 'D\u00c9COR -', nb: '8005' },
+      { n: 'CANICA', s: 'D\u00c9COR -', nb: '8006' },
+      { n: 'CELESTINE', s: 'D\u00c9COR -', nb: '8007' },
+      { n: 'CHEAPEST', s: 'D\u00c9COR -', nb: '8008' },
+      { n: 'CORNET', s: 'D\u00c9COR -', nb: '8009' },
+      { n: 'DAHLIA', s: 'D\u00c9COR -', nb: '8010' },
+      { n: 'DALLES', s: 'D\u00c9COR -', nb: '8011' },
+      { n: 'EBON', s: 'D\u00c9COR -', nb: '8012' },
+      { n: 'ENAMEL  GRIS', s: 'D\u00c9COR -', nb: '8013' },
+      { n: 'KITO', s: 'D\u00c9COR -', nb: '8014' },
+      { n: 'LAVACHE', s: 'D\u00c9COR -', nb: '8015' },
+      { n: 'MAHOGANY', s: 'D\u00c9COR -', nb: '8016' },
+      { n: 'MOKSHA D\u00c9COR', s: 'D\u00c9COR -', nb: '8017' },
+      { n: 'MOORISH', s: 'D\u00c9COR -', nb: '8018' },
+      { n: 'NARGEES', s: 'D\u00c9COR -', nb: '8019' },
+      { n: 'SQUARE TONE', s: 'D\u00c9COR -', nb: '8020' },
+      { n: 'PASHMINA', s: 'D\u00c9COR -', nb: '8021' },
+      { n: 'RECTUS GRIS', s: 'D\u00c9COR -', nb: '8022' },
+      { n: 'SPARKLE AZURE', s: 'D\u00c9COR -', nb: '8023' },
+      { n: 'SWDEN', s: 'D\u00c9COR -', nb: '8024' },
+      { n: 'ALASKA BEIGE', s: 'MATT  -', nb: '4001' },
+      { n: 'AMERICAN WOOD BEIGE', s: 'MATT  -', nb: '4002' },
+      { n: 'AMERICAN WOOD GREY', s: 'MATT  -', nb: '4003' },
+      { n: 'AMERICAN WOOD NATURAL', s: 'MATT  -', nb: '4004' },
+      { n: 'ARTISTIC BEIGE', s: 'MATT  -', nb: '4005' },
+      { n: 'ASPEN BROWN', s: 'MATT  -', nb: '4006' },
+      { n: 'ASPEN GREY', s: 'MATT  -', nb: '4007' },
+      { n: 'ASPEN SMOKE', s: 'MATT  -', nb: '4008' },
+      { n: 'BELLY WOOD BROWN', s: 'MATT  -', nb: '4009' },
+      { n: 'CAIRO BEIGE', s: 'MATT  -', nb: '4010' },
+      { n: 'CAIRO BROWN', s: 'MATT  -', nb: '4011' },
+      { n: 'CAIRO GREY', s: 'MATT  -', nb: '4012' },
+      { n: 'CEMENTO COPPER', s: 'MATT  -', nb: '4013' },
+      { n: 'CEMENTO COPPER GREY', s: 'MATT  -', nb: '4014' },
+      { n: 'CEMENTO GRAPHITE', s: 'MATT  -', nb: '4015' },
+      { n: 'CEMENTO  GREY', s: 'MATT  -', nb: '4016' },
+      { n: 'CEMENTO SMOKE', s: 'MATT  -', nb: '4017' },
+      { n: 'DALLSA BEIGE', s: 'MATT  -', nb: '4018' },
+      { n: 'DALLSA  BLACK', s: 'MATT  -', nb: '4019' },
+      { n: 'DALLSA  BROWN', s: 'MATT  -', nb: '4020' },
+      { n: 'DALLSA  GREY', s: 'MATT  -', nb: '4021' },
+      { n: 'EARTH STONE BROWN', s: 'MATT  -', nb: '4022' },
+      { n: 'EARTH STONE NATURAL', s: 'MATT  -', nb: '4023' },
+      { n: 'GRIET BROWN', s: 'MATT  -', nb: '4024' },
+      { n: 'GRIET CREMA', s: 'MATT  -', nb: '4025' },
+      { n: 'HOBART GREY', s: 'MATT  -', nb: '4026' },
+      { n: 'HOBART SMOKE', s: 'MATT  -', nb: '4027' },
+      { n: 'LOGAS BEIGE', s: 'MATT  -', nb: '4028' },
+      { n: 'LOGAS CHOCO', s: 'MATT  -', nb: '4029' },
+      { n: 'LOGAS GRAFITO', s: 'MATT  -', nb: '4030' },
+      { n: 'LOGAS SMOKE', s: 'MATT  -', nb: '4031' },
+      { n: 'MATEX BROWN', s: 'MATT  -', nb: '4032' },
+      { n: 'MATEX GREY', s: 'MATT  -', nb: '4033' },
+      { n: 'MEPALWOOD BROWN', s: 'MATT  -', nb: '4034' },
+      { n: 'MEPALWOOD WENGE', s: 'MATT  -', nb: '4035' },
+      { n: 'MILANO COFFEE', s: 'MATT  -', nb: '4036' },
+      { n: 'MILANO GREY', s: 'MATT  -', nb: '4037' },
+      { n: 'MILANO IVORY', s: 'MATT  -', nb: '4038' },
+      { n: 'MILANO SAND', s: 'MATT  -', nb: '4039' },
+      { n: 'OAK WOOD NATURAL', s: 'MATT  -', nb: '4040' },
+      { n: 'PINE WOOD WENGE', s: 'MATT  -', nb: '4041' },
+      { n: 'ROCK STONE BEIGE', s: 'MATT  -', nb: '4042' },
+      { n: 'ROCK STONE BROWN', s: 'MATT  -', nb: '4043' },
+      { n: 'ROCK STONE NATURAL', s: 'MATT  -', nb: '4044' },
+      { n: 'SAHARA MOON', s: 'MATT  -', nb: '4045' },
+      { n: 'SAHARA SAND', s: 'MATT  -', nb: '4046' },
+      { n: 'SAHARA  SMOKE', s: 'MATT  -', nb: '4047' },
+      { n: 'SHEESHAM WOOD CREMA', s: 'MATT  -', nb: '4048' },
+      { n: 'SPANISH GREY', s: 'MATT  -', nb: '4049' },
+      { n: 'TARANTONO BEIGE', s: 'MATT  -', nb: '4050' },
+      { n: 'TARANTONO GREY', s: 'MATT  -', nb: '4051' },
+      { n: 'TIMBER WOOD BEIGE', s: 'MATT  -', nb: '4052' },
+      { n: 'TIMBER WOOD CREMA', s: 'MATT  -', nb: '4053' },
+      { n: 'APOLIMA NATURAL', s: 'MATT  -', nb: '4054' },
+      { n: 'ARADOR BEIGE', s: 'MATT  -', nb: '4055' },
+      { n: 'ARGO GREY', s: 'MATT  -', nb: '4056' },
+      { n: 'BARK WOOD BROWN', s: 'MATT  -', nb: '4057' },
+      { n: 'CAMILO BROWN', s: 'MATT  -', nb: '4058' },
+      { n: 'EBANO FEET', s: 'MATT  -', nb: '4059' },
+      { n: 'GALICIA SANDDUNE', s: 'MATT  -', nb: '4060' },
+      { n: 'GENOVA BEIGE', s: 'MATT  -', nb: '4061' },
+      { n: 'LITHIA NATURAL', s: 'MATT  -', nb: '4062' },
+      { n: 'LONZA CREMA', s: 'MATT  -', nb: '4063' },
+      { n: 'MADURA', s: 'MATT  -', nb: '4064' },
+      { n: 'MODENA SLATE', s: 'MATT  -', nb: '4065' },
+      { n: 'MOSKAT MULTI', s: 'MATT  -', nb: '4066' },
+      { n: 'MYRA GREY', s: 'MATT  -', nb: '4067' },
+      { n: 'OSTER WOOD', s: 'MATT  -', nb: '4068' },
+      { n: 'SANDSTONE CREMA', s: 'MATT  -', nb: '4069' },
+      { n: 'SANDSTONE  NERO', s: 'MATT  -', nb: '4070' },
+      { n: 'SMOKY GREY', s: 'MATT  -', nb: '4071' },
+      { n: 'TESSER BEIGE', s: 'MATT  -', nb: '4072' },
+      { n: 'ARON AQUA', s: 'MATT  -', nb: '4073' },
+      { n: 'ARON  COPPER', s: 'MATT  -', nb: '4074' },
+      { n: 'ARON  PASTEL', s: 'MATT  -', nb: '4075' },
+      { n: 'BRELIN  NATURAL', s: 'MATT  -', nb: '4076' },
+      { n: 'CANVES BLUE', s: 'MATT  -', nb: '4077' },
+      { n: 'CANVES GREY', s: 'MATT  -', nb: '4078' },
+      { n: 'CANVES  PASTEL', s: 'MATT  -', nb: '4079' },
+      { n: 'CLARA BEIGE', s: 'MATT  -', nb: '4080' },
+      { n: 'CLARA GREY', s: 'MATT  -', nb: '4081' },
+      { n: 'CLASSICA BEIGE', s: 'MATT  -', nb: '4082' },
+      { n: 'CROSS WOOD  AQUA', s: 'MATT  -', nb: '4083' },
+      { n: 'CROSS WOOD ALPINE GREY', s: 'MATT  -', nb: '4084' },
+      { n: 'CROSS WOOD  BIANCO', s: 'MATT  -', nb: '4085' },
+      { n: 'CROSS WOOD  CHOCO', s: 'MATT  -', nb: '4086' },
+      { n: 'CROSS WOOD  CREMA', s: 'MATT  -', nb: '4087' },
+      { n: 'CROSS WOOD  SILVER', s: 'MATT  -', nb: '4088' },
+      { n: 'CROSS WOOD  GREY', s: 'MATT  -', nb: '4089' },
+      { n: 'CROSS WOOD  DARK GREY', s: 'MATT  -', nb: '4090' },
+      { n: 'CROSS WOOD  LIGHT', s: 'MATT  -', nb: '4091' },
+      { n: 'CROSS WOOD  NATURAL', s: 'MATT  -', nb: '4092' },
+      { n: 'CROSS WOOD ROYAL', s: 'MATT  -', nb: '4093' },
+      { n: 'FINE WOOD CREAM', s: 'MATT  -', nb: '4094' },
+      { n: 'LAMINA AQUA', s: 'MATT  -', nb: '4095' },
+      { n: 'LAMINA  SILVER', s: 'MATT  -', nb: '4096' },
+      { n: 'MONTANA BEIGE', s: 'MATT  -', nb: '4097' },
+      { n: 'PINE CEDAR', s: 'MATT  -', nb: '4098' },
+      { n: 'ROVER GRIS', s: 'MATT  -', nb: '4099' },
+      { n: 'ROYAL EXOTIC BLUE', s: 'MATT  -', nb: '4100' },
+      { n: 'ROYAL EXOTIC BROWN', s: 'MATT  -', nb: '4101' },
+      { n: 'ROYAL EXOTIC GREY', s: 'MATT  -', nb: '4102' },
+      { n: 'VENICE BEIGE', s: 'MATT  -', nb: '4103' },
+      { n: 'VENICE GREY', s: 'MATT  -', nb: '4104' },
+      { n: 'WAVE  CREAM', s: 'MATT  -', nb: '4105' },
+      { n: 'WAVE  GREY', s: 'MATT  -', nb: '4106' },
+      { n: 'ALASKA NERO', s: 'CRV -', nb: '5001' },
+      { n: 'ARIDO GREEM ECOR', s: 'CRV -', nb: '5002' },
+      { n: 'ASIA AQUA', s: 'CRV -', nb: '5003' },
+      { n: 'ASIA GOLD', s: 'CRV -', nb: '5004' },
+      { n: 'ASIA RED', s: 'CRV -', nb: '5005' },
+      { n: 'ASIA SKY', s: 'CRV -', nb: '5006' },
+      { n: 'ATHENCE GOLD D\u00c9COR', s: 'CRV -', nb: '5007' },
+      { n: 'BIXBITE NATURAL', s: 'CRV -', nb: '5008' },
+      { n: 'BLACK  GRANITE', s: 'CRV -', nb: '5009' },
+      { n: 'BONITO BEIGE', s: 'CRV -', nb: '5010' },
+      { n: 'BOTTOCHINO ULTRA', s: 'CRV -', nb: '5011' },
+      { n: 'CAIRO BLACK', s: 'CRV -', nb: '5012' },
+      { n: 'CAORO GREY', s: 'CRV -', nb: '5013' },
+      { n: 'CANYON AQUA', s: 'CRV -', nb: '5014' },
+      { n: 'CANYON GOLD', s: 'CRV -', nb: '5015' },
+      { n: 'CANYON GREEN', s: 'CRV -', nb: '5016' },
+      { n: 'CANYON MINT', s: 'CRV -', nb: '5017' },
+      { n: 'CANYON RED', s: 'CRV -', nb: '5018' },
+      { n: 'CANYON SMOKE', s: 'CRV -', nb: '5019' },
+      { n: 'CARRARA SATUARIO', s: 'CRV -', nb: '5020' },
+      { n: 'CEMENTO BIANCO', s: 'CRV -', nb: '5021' },
+      { n: 'CEMENTO  GRIS', s: 'CRV -', nb: '5022' },
+      { n: 'CHIPS BLUE', s: 'CRV -', nb: '5023' },
+      { n: 'CHIPS GREY', s: 'CRV -', nb: '5024' },
+      { n: 'CHIPS IVORY', s: 'CRV -', nb: '5025' },
+      { n: 'COCO BROWN', s: 'CRV -', nb: '5026' },
+      { n: 'COCO GREY', s: 'CRV -', nb: '5027' },
+      { n: 'CONCERETE GOLD', s: 'CRV -', nb: '5028' },
+      { n: 'CONCERETE  GREY', s: 'CRV -', nb: '5029' },
+      { n: 'CORAS BLACK', s: 'CRV -', nb: '5030' },
+      { n: 'CORAS CREMA', s: 'CRV -', nb: '5031' },
+      { n: 'COSTA NATURAL', s: 'CRV -', nb: '5032' },
+      { n: 'CRACON GREY', s: 'CRV -', nb: '5033' },
+      { n: 'ELECTRO GOLD', s: 'CRV -', nb: '5034' },
+      { n: 'EMPRO BROWN', s: 'CRV -', nb: '5035' },
+      { n: 'EMPRO  GRIS', s: 'CRV -', nb: '5036' },
+      { n: 'FEATHER BEIGE', s: 'CRV -', nb: '5037' },
+      { n: 'FLORENCE BEIGE', s: 'CRV -', nb: '5038' },
+      { n: 'FLORENCE GREY', s: 'CRV -', nb: '5039' },
+      { n: 'FLORITO BEOGE', s: 'CRV -', nb: '5040' },
+      { n: 'FLORITO BLUE', s: 'CRV -', nb: '5041' },
+      { n: 'FUSION CHOCO', s: 'CRV -', nb: '5042' },
+      { n: 'GALAXY BEIGE', s: 'CRV -', nb: '5043' },
+      { n: 'HEAVEN BEIGE', s: 'CRV -', nb: '5044' },
+      { n: 'HOBART AQUA D\u00c9COR', s: 'CRV -', nb: '5045' },
+      { n: 'IMPACT WHITE', s: 'CRV -', nb: '5046' },
+      { n: 'LISTELO BROWN', s: 'CRV -', nb: '5047' },
+      { n: 'LISTELO SMOKE', s: 'CRV -', nb: '5048' },
+      { n: 'MARBO CREMA', s: 'CRV -', nb: '5049' },
+      { n: 'MARINA CREMA', s: 'CRV -', nb: '5050' },
+      { n: 'MIAMI BEIGE', s: 'CRV -', nb: '5051' },
+      { n: 'MORIOX  BROWN', s: 'CRV -', nb: '5052' },
+      { n: 'MORIOX GREY', s: 'CRV -', nb: '5053' },
+      { n: 'MYSTIC BROWN', s: 'CRV -', nb: '5054' },
+      { n: 'MYSTIC NATURAL', s: 'CRV -', nb: '5055' },
+      { n: 'OLWIN GREY', s: 'CRV -', nb: '5056' },
+      { n: 'ORLEAN  AQUA D\u00c9COR', s: 'CRV -', nb: '5057' },
+      { n: 'PULPIS BROWN', s: 'CRV -', nb: '5058' },
+      { n: 'PULPIS GREY', s: 'CRV -', nb: '5059' },
+      { n: 'ROCK BROWN STONE', s: 'CRV -', nb: '5060' },
+      { n: 'ROMANTIC WHITE', s: 'CRV -', nb: '5061' },
+      { n: 'ROYAL BEIGE', s: 'CRV -', nb: '5062' },
+      { n: 'ROYAL BLUE', s: 'CRV -', nb: '5063' },
+      { n: 'SALANCE ICE', s: 'CRV -', nb: '5064' },
+      { n: 'SAND PULPIS', s: 'CRV -', nb: '5065' },
+      { n: 'SEA STONE GREY', s: 'CRV -', nb: '5066' },
+      { n: 'SAE STONE NATURAL', s: 'CRV -', nb: '5067' },
+      { n: 'SEA STONE WHITE', s: 'CRV -', nb: '5068' },
+      { n: 'STONEX CHOCO', s: 'CRV -', nb: '5069' },
+      { n: 'THUNDER WHITE', s: 'CRV -', nb: '5070' },
+      { n: 'TRAFFIC TRAVERTINO', s: 'CRV -', nb: '5071' },
+      { n: 'TRAVERTINO BROWN', s: 'CRV -', nb: '5072' },
+      { n: 'TRAVERTINO GREY', s: 'CRV -', nb: '5073' },
+      { n: 'AFYON SPIER', s: 'CRV -', nb: '5074' },
+      { n: 'ANATOLIAN GREY', s: 'CRV -', nb: '5075' },
+      { n: 'ARMONIA KEMAL', s: 'CRV -', nb: '5076' },
+      { n: 'BARROCA BEIGE', s: 'CRV -', nb: '5077' },
+      { n: 'BELLA CREMA', s: 'CRV -', nb: '5078' },
+      { n: 'BURDUR BEIGE', s: 'CRV -', nb: '5079' },
+      { n: 'BURNT UMBER', s: 'CRV -', nb: '5080' },
+      { n: 'CAREEN MILE', s: 'CRV -', nb: '5081' },
+      { n: 'CEDAR WOOD', s: 'CRV -', nb: '5082' },
+      { n: 'DESERT SAND', s: 'CRV -', nb: '5083' },
+      { n: 'HARSIN MINT', s: 'CRV -', nb: '5084' },
+      { n: 'HEMLOK GREY', s: 'CRV -', nb: '5085' },
+      { n: 'KHOOR MARBLE', s: 'CRV -', nb: '5086' },
+      { n: 'METALLICUS  GREY', s: 'CRV -', nb: '5087' },
+      { n: 'MILAS LILAC', s: 'CRV -', nb: '5088' },
+      { n: 'MOSS IVORY', s: 'CRV -', nb: '5089' },
+      { n: 'PARAGA BEACH', s: 'CRV -', nb: '5090' },
+      { n: 'PITRA GREY', s: 'CRV -', nb: '5091' },
+      { n: 'ROMA WOOD', s: 'CRV -', nb: '5092' },
+      { n: 'ROMAR PEARL', s: 'CRV -', nb: '5093' },
+      { n: 'SPERENZA MARBLE', s: 'CRV -', nb: '5094' },
+      { n: 'STARRY DARK GREY', s: 'CRV -', nb: '5095' },
+      { n: 'TEAK WOOD', s: 'CRV -', nb: '5096' },
+      { n: 'THASAS WHITE', s: 'CRV -', nb: '5097' },
+      { n: 'VENA SIGMA', s: 'CRV -', nb: '5098' },
+      { n: 'BOLERO CAPRI', s: 'CRV -', nb: '5099' },
+      { n: 'GLELLO VITTORIO', s: 'CRV -', nb: '5100' },
+      { n: 'MAPPA MARBLE', s: 'CRV -', nb: '5101' },
+      { n: 'MEDUSA  MARBLE', s: 'CRV -', nb: '5102' },
+      { n: 'NOIR SAINT LAURENT', s: 'CRV -', nb: '5103' },
+      { n: 'ASTER BEIGE', s: 'CRV -', nb: '5104' },
+      { n: 'ASTER  BIANCO', s: 'CRV -', nb: '5105' },
+      { n: 'ASTER CREAM', s: 'CRV -', nb: '5106' },
+      { n: 'ASTER  GREY', s: 'CRV -', nb: '5107' },
+      { n: 'BOTTOCHINO CLARO', s: 'CRV -', nb: '5108' },
+      { n: 'CALACUTTA ARABESQUE', s: 'CRV -', nb: '5109' },
+      { n: 'CALACUTTA ARABESQUE GREY', s: 'CRV -', nb: '5110' },
+      { n: 'CARVED GOLD', s: 'CRV -', nb: '5111' },
+      { n: 'CARVED SLATE', s: 'CRV -', nb: '5112' },
+      { n: 'CORTONA BIANCO', s: 'CRV -', nb: '5113' },
+      { n: 'CORTONA GESSO', s: 'CRV -', nb: '5114' },
+      { n: 'CORTONA GREY', s: 'CRV -', nb: '5115' },
+      { n: 'CORTONA OSSIDO', s: 'CRV -', nb: '5116' },
+      { n: 'CRISTA AMBER', s: 'CRV -', nb: '5117' },
+      { n: 'CRISTA DARK GREY', s: 'CRV -', nb: '5118' },
+      { n: 'CRISTA LIGHT', s: 'CRV -', nb: '5119' },
+      { n: 'CRISTA PEARL', s: 'CRV -', nb: '5120' },
+      { n: 'DINOVA BEIGE', s: 'CRV -', nb: '5121' },
+      { n: 'DINOVA GREY', s: 'CRV -', nb: '5122' },
+      { n: 'ESSENTIAL GRAPHITE', s: 'CRV -', nb: '5123' },
+      { n: 'ESSENTIAL MARRON', s: 'CRV -', nb: '5124' },
+      { n: 'EVO MARMO', s: 'CRV -', nb: '5125' },
+      { n: 'EVO MARMO GRIS', s: 'CRV -', nb: '5126' },
+      { n: 'EVO MARMO MARRON', s: 'CRV -', nb: '5127' },
+      { n: 'FORENZE GREY', s: 'CRV -', nb: '5128' },
+      { n: 'FORNZE GOLD', s: 'CRV -', nb: '5129' },
+      { n: 'IMAGINE DARK', s: 'CRV -', nb: '5130' },
+      { n: 'IMAGINE LIGHT', s: 'CRV -', nb: '5131' },
+      { n: 'LIMER BEIGE', s: 'CRV -', nb: '5132' },
+      { n: 'LIMER BIANCO', s: 'CRV -', nb: '5133' },
+      { n: 'LIMER BROWN', s: 'CRV -', nb: '5134' },
+      { n: 'LIMER CREAM', s: 'CRV -', nb: '5135' },
+      { n: 'LIMER GREY', s: 'CRV -', nb: '5136' },
+      { n: 'MALTA BEIGE', s: 'CRV -', nb: '5137' },
+      { n: 'MALTA BIANCO', s: 'CRV -', nb: '5138' },
+      { n: 'MEGNETIC GOLD', s: 'CRV -', nb: '5139' },
+      { n: 'MEGNETIC GREY', s: 'CRV -', nb: '5140' },
+      { n: 'MONTE BIANCO', s: 'CRV -', nb: '5141' },
+      { n: 'MORENO BIANCO', s: 'CRV -', nb: '5142' },
+      { n: 'MORENO CREMA', s: 'CRV -', nb: '5143' },
+      { n: 'MORENO HAZEL', s: 'CRV -', nb: '5144' },
+      { n: 'MORENO MARFIL', s: 'CRV -', nb: '5145' },
+      { n: 'MORENO SILVER', s: 'CRV -', nb: '5146' },
+      { n: 'NHEPRITE BEIGE', s: 'CRV -', nb: '5147' },
+      { n: 'NHEPRITE  DARK GREY', s: 'CRV -', nb: '5148' },
+      { n: 'NHEPRITE  GREY', s: 'CRV -', nb: '5149' },
+      { n: 'NHEPRITE  GRIGIO', s: 'CRV -', nb: '5150' },
+      { n: 'OMEGA BEIGE', s: 'CRV -', nb: '5151' },
+      { n: 'OMEGA  BIANCO', s: 'CRV -', nb: '5152' },
+      { n: 'OMEGA GREY', s: 'CRV -', nb: '5153' },
+      { n: 'PALAYA  BEIGE', s: 'CRV -', nb: '5154' },
+      { n: 'PALAYA  BIANCO', s: 'CRV -', nb: '5155' },
+      { n: 'PALAYA  BLUE', s: 'CRV -', nb: '5156' },
+      { n: 'PALAYA CREMA', s: 'CRV -', nb: '5157' },
+      { n: 'PALAYA  DUST', s: 'CRV -', nb: '5158' },
+      { n: 'PALAYA GREY', s: 'CRV -', nb: '5159' },
+      { n: 'QUARTZ', s: 'CRV -', nb: '5160' },
+      { n: 'QUARTZ CREAM', s: 'CRV -', nb: '5161' },
+      { n: 'QUARTZ WHITE', s: 'CRV -', nb: '5162' },
+      { n: 'ROYAL SATUARIO GOLD', s: 'CRV -', nb: '5163' },
+      { n: 'SETIDO', s: 'CRV -', nb: '5164' },
+      { n: 'STONELLA BIANCO', s: 'CRV -', nb: '5165' },
+      { n: 'STONELLA CREMA', s: 'CRV -', nb: '5166' },
+      { n: 'STONELLA GRIS', s: 'CRV -', nb: '5167' },
+      { n: 'SUMMER WHITE', s: 'CRV -', nb: '5168' },
+      { n: 'TERRA BEIGE', s: 'CRV -', nb: '5169' },
+      { n: 'TERRA GRAPHITE', s: 'CRV -', nb: '5170' },
+      { n: 'TERRA GRAPHITE  GREY', s: 'CRV -', nb: '5171' },
+      { n: 'TIFFENY GREY', s: 'CRV -', nb: '5172' },
+      { n: 'WINTER AMBER', s: 'CRV -', nb: '5173' },
+      { n: 'WINTER CREMA', s: 'CRV -', nb: '5174' },
+      { n: 'WINTER DARK', s: 'CRV -', nb: '5175' },
+      { n: 'WINTER LIGHT', s: 'CRV -', nb: '5176' },
+      { n: 'WINTER MID', s: 'CRV -', nb: '5177' },
+      { n: 'WINTERO IVORY', s: 'CRV -', nb: '5178' },
+      { n: 'WINTERO PEARL', s: 'CRV -', nb: '5179' },
+      { n: 'ABSOLUTE BLACK', s: 'HG -', nb: '6001' },
+      { n: 'ABSTRACT BROWN', s: 'HG -', nb: '6002' },
+      { n: 'AGATHA BLUE', s: 'HG -', nb: '6003' },
+      { n: 'AMANI BLUE', s: 'HG -', nb: '6004' },
+      { n: 'ANTICA BLACK', s: 'HG -', nb: '6005' },
+      { n: 'ANTOLIA COFFEE', s: 'HG -', nb: '6006' },
+      { n: 'ARMANI COFFEE', s: 'HG -', nb: '6007' },
+      { n: 'ASTRA BLACK D\u00c9COR', s: 'HG -', nb: '6008' },
+      { n: 'ATLANTIS OCEAN', s: 'HG -', nb: '6009' },
+      { n: 'BLACK MARQUINA', s: 'HG -', nb: '6010' },
+      { n: 'BLUE BAHIA', s: 'HG -', nb: '6011' },
+      { n: 'BLUE MOON', s: 'HG -', nb: '6012' },
+      { n: 'CELLOSIA BLUE', s: 'HG -', nb: '6013' },
+      { n: 'COBALT BLUE', s: 'HG -', nb: '6014' },
+      { n: 'COSMIC BLUE', s: 'HG -', nb: '6015' },
+      { n: 'COSMOS BROWN', s: 'HG -', nb: '6016' },
+      { n: 'COYATE BLACK D\u00c9COR', s: 'HG -', nb: '6017' },
+      { n: 'DENIM BLUE', s: 'HG -', nb: '6018' },
+      { n: 'EARTH TONE BLUE', s: 'HG -', nb: '6019' },
+      { n: 'EARTH TONE  BROWN', s: 'HG -', nb: '6020' },
+      { n: 'EARTH TONE  GOLDEN', s: 'HG -', nb: '6021' },
+      { n: 'EMERALD BLUE', s: 'HG -', nb: '6022' },
+      { n: 'ESTRADA BLACK', s: 'HG -', nb: '6023' },
+      { n: 'EXOTIC D\u00c9COR', s: 'HG -', nb: '6024' },
+      { n: 'FLORIDA GOLD', s: 'HG -', nb: '6025' },
+      { n: 'FOREST BROWN', s: 'HG -', nb: '6026' },
+      { n: 'FOSSIL BLACK', s: 'HG -', nb: '6027' },
+      { n: 'GOLDEN BLACK', s: 'HG -', nb: '6028' },
+      { n: 'GOLDEN PORTORO', s: 'HG -', nb: '6029' },
+      { n: 'HECATE GLOBAL', s: 'HG -', nb: '6030' },
+      { n: 'HEXA BLACK D\u00c9COR', s: 'HG -', nb: '6031' },
+      { n: 'INFINITY BLUE', s: 'HG -', nb: '6032' },
+      { n: 'KENYA BLACK', s: 'HG -', nb: '6033' },
+      { n: 'LAVA NATURAL', s: 'HG -', nb: '6034' },
+      { n: 'LIQUID BLUE', s: 'HG -', nb: '6035' },
+      { n: 'LUMINA BLACK', s: 'HG -', nb: '6036' },
+      { n: 'MAGIC AZULE', s: 'HG -', nb: '6037' },
+      { n: 'MAGMA NATURAL', s: 'HG -', nb: '6038' },
+      { n: 'MAKARANI BROWN', s: 'HG -', nb: '6039' },
+      { n: 'MARBITA BLACK D\u00c9COR', s: 'HG -', nb: '6040' },
+      { n: 'MARINA BLACK', s: 'HG -', nb: '6041' },
+      { n: 'MEDITARIAN BLACK', s: 'HG -', nb: '6042' },
+      { n: 'MORIOX BROWN', s: 'HG -', nb: '6043' },
+      { n: 'NEO EMPERA BROWN', s: 'HG -', nb: '6044' },
+      { n: 'NATURAL BRILLIANT', s: 'HG -', nb: '6045' },
+      { n: 'OPERA AZULE', s: 'HG -', nb: '6046' },
+      { n: 'OPERA BLACK', s: 'HG -', nb: '6047' },
+      { n: 'OROBICO BROWN', s: 'HG -', nb: '6048' },
+      { n: 'OXIDO BLACK', s: 'HG -', nb: '6049' },
+      { n: 'PANDA BLACK', s: 'HG -', nb: '6050' },
+      { n: 'PORT BLACK', s: 'HG -', nb: '6051' },
+      { n: 'PORTORO BLACK', s: 'HG -', nb: '6052' },
+      { n: 'PORTORO SILVER', s: 'HG -', nb: '6053' },
+      { n: 'RIVERA BROWN', s: 'HG -', nb: '6054' },
+      { n: 'ROSSO BLACK', s: 'HG -', nb: '6055' },
+      { n: 'ROSSO BROWN', s: 'HG -', nb: '6056' },
+      { n: 'SAINT LAURENT', s: 'HG -', nb: '6057' },
+      { n: 'SANDSTONE BROWN', s: 'HG -', nb: '6058' },
+      { n: 'SMOKEY QUARTZ', s: 'HG -', nb: '6059' },
+      { n: 'SOFTSTONE NATURAL', s: 'HG -', nb: '6060' },
+      { n: 'STONEX BROWN', s: 'HG -', nb: '6061' },
+      { n: 'STROM MINK', s: 'HG -', nb: '6062' },
+      { n: 'TURKISH VARDE', s: 'HG -', nb: '6063' },
+      { n: 'ZIBRA BLACK', s: 'HG -', nb: '6064' },
+      { n: 'AMORA', s: 'HG -', nb: '6065' },
+      { n: 'ARIKA', s: 'HG -', nb: '6066' },
+      { n: 'ARMEIDA', s: 'HG -', nb: '6067' },
+      { n: 'ASTER', s: 'HG -', nb: '6068' },
+      { n: 'BIDASAR BEAUTY', s: 'HG -', nb: '6069' },
+      { n: 'CRYSTALLO VITTRO', s: 'HG -', nb: '6070' },
+      { n: 'ELLA BLACK', s: 'HG -', nb: '6071' },
+      { n: 'GRANIT BROWN', s: 'HG -', nb: '6072' },
+      { n: 'GRAVIER', s: 'HG -', nb: '6073' },
+      { n: 'GUANGXI  WHITE', s: 'HG -', nb: '6074' },
+      { n: 'IRAQ LIZA', s: 'HG -', nb: '6075' },
+      { n: 'LIMINAL', s: 'HG -', nb: '6076' },
+      { n: 'MISTICEO BLACK', s: 'HG -', nb: '6077' },
+      { n: 'MUNICH', s: 'HG -', nb: '6078' },
+      { n: 'ORMEA BLACK', s: 'HG -', nb: '6079' },
+      { n: 'PICASSO CRISTAL', s: 'HG -', nb: '6080' },
+      { n: 'POPE PINE', s: 'HG -', nb: '6081' },
+      { n: 'ROSA ZARCI', s: 'HG -', nb: '6082' },
+      { n: 'RUIVINA TIGAR', s: 'HG -', nb: '6083' },
+      { n: 'RUSET NATURAL', s: 'HG -', nb: '6084' },
+      { n: 'STRICKLE', s: 'HG -', nb: '6085' },
+      { n: 'TAGLE BLACK', s: 'HG -', nb: '6086' },
+      { n: 'TIAL POSA', s: 'HG -', nb: '6087' },
+      { n: 'VIA LACTEA', s: 'HG -', nb: '6088' },
+      { n: 'VOLCANO BLACK', s: 'HG -', nb: '6089' },
+      { n: 'ALLOY CONTOUR', s: 'BM -', nb: '6090' },
+      { n: 'AMAZONE AUA', s: 'BM -', nb: '6091' },
+      { n: 'AQUA BIANCO FANTASTIC', s: 'BM -', nb: '6092' },
+      { n: 'ATLANTIS  AQUA', s: 'BM -', nb: '6093' },
+      { n: 'AZERO MULTY', s: 'BM -', nb: '6094' },
+      { n: 'BLACK COSMIC', s: 'BM -', nb: '6095' },
+      { n: 'CASTANO AQUA', s: 'BM -', nb: '6096' },
+      { n: 'COBWEB AQUA', s: 'BM -', nb: '6097' },
+      { n: 'COBWEB GREEN', s: 'BM -', nb: '6098' },
+      { n: 'COLOGNE GREEN', s: 'BM -', nb: '6099' },
+      { n: 'CORAL PEARL', s: 'BM -', nb: '6100' },
+      { n: 'COSMIC GREEN', s: 'BM -', nb: '6101' },
+      { n: 'CRIMSON TEAL', s: 'BM -', nb: '6102' },
+      { n: 'DENVER  AQUA', s: 'BM -', nb: '6103' },
+      { n: 'DOMINO AQUA', s: 'BM -', nb: '6104' },
+      { n: 'DOMINO RED', s: 'BM -', nb: '6105' },
+      { n: 'DOMINO WHITE', s: 'BM -', nb: '6106' },
+      { n: 'DORATO AQUA', s: 'BM -', nb: '6107' },
+      { n: 'ELEGANCE BLUE', s: 'BM -', nb: '6108' },
+      { n: 'ELEGANCE NATURAL', s: 'BM -', nb: '6109' },
+      { n: 'ELVINE NATURAL', s: 'BM -', nb: '6110' },
+      { n: 'EMASER AQUA', s: 'BM -', nb: '6111' },
+      { n: 'FANTASTIC ONYX AQUA', s: 'BM -', nb: '6112' },
+      { n: 'FIREBOTT NATURAL', s: 'BM -', nb: '6113' },
+      { n: 'FOSION AQUA', s: 'BM -', nb: '6114' },
+      { n: 'GOLDEN ANTOLIA', s: 'BM -', nb: '6115' },
+      { n: 'GREEN REVERIE', s: 'BM -', nb: '6116' },
+      { n: 'GRIGIO AQUA ONYX', s: 'BM -', nb: '6117' },
+      { n: 'GRIGIO RED ONYX', s: 'BM -', nb: '6118' },
+      { n: 'ICE ONYX AQUA', s: 'BM -', nb: '6119' },
+      { n: 'IMPERIAL RUST', s: 'BM -', nb: '6120' },
+      { n: 'INTEGRA BLACK', s: 'BM -', nb: '6121' },
+      { n: 'JENET GREEN', s: 'BM -', nb: '6122' },
+      { n: 'LAWA AQUA', s: 'BM -', nb: '6123' },
+      { n: 'MAGIC SANTORINI', s: 'BM -', nb: '6124' },
+      { n: 'MAGMA', s: 'BM -', nb: '6125' },
+      { n: 'MARMEZ AQUA', s: 'BM -', nb: '6126' },
+      { n: 'MISCIBLE AQUA', s: 'BM -', nb: '6127' },
+      { n: 'MOON ONYX GREEN', s: 'BM -', nb: '6128' },
+      { n: 'MUSTARD NATURAL', s: 'BM -', nb: '6129' },
+      { n: 'ORENGE ONYX', s: 'BM -', nb: '6130' },
+      { n: 'ONYX EMERALD', s: 'BM -', nb: '6131' },
+      { n: 'OPERA BLUU', s: 'BM -', nb: '6132' },
+      { n: 'OZONE AQUA', s: 'BM -', nb: '6133' },
+      { n: 'PAINT AQUA', s: 'BM -', nb: '6134' },
+      { n: 'RIGA BRONZE', s: 'BM -', nb: '6135' },
+      { n: 'ROMAN AQUA', s: 'BM -', nb: '6136' },
+      { n: 'SPIDER GREEN', s: 'BM -', nb: '6137' },
+      { n: 'STROM NATURAL', s: 'BM -', nb: '6138' },
+      { n: 'TORENTO AQUA', s: 'BM -', nb: '6139' },
+      { n: 'TROPOCAL AQUA', s: 'BM -', nb: '6140' },
+      { n: 'TROPOCAL  GREEN', s: 'BM -', nb: '6141' },
+      { n: 'URBAN GREEN', s: 'BM -', nb: '6142' },
+      { n: 'URBAN NATURAL', s: 'BM -', nb: '6143' },
+      { n: 'VINTAGE MAYA', s: 'BM -', nb: '6144' },
+      { n: 'WILLAIM NATURAL', s: 'BM -', nb: '6145' },
+      { n: 'ADEN', s: 'BM -', nb: '6146' },
+      { n: 'AKOTA', s: 'BM -', nb: '6147' },
+      { n: 'BASEL', s: 'BM -', nb: '6148' },
+      { n: 'BELFAST', s: 'BM -', nb: '6149' },
+      { n: 'BISHKEK', s: 'BM -', nb: '6150' },
+      { n: 'BITCON', s: 'BM -', nb: '6151' },
+      { n: 'BOGATA', s: 'BM -', nb: '6152' },
+      { n: 'BRUSSELS', s: 'BM -', nb: '6153' },
+      { n: 'BUKHARA', s: 'BM -', nb: '6154' },
+      { n: 'CALVIN', s: 'BM -', nb: '6155' },
+      { n: 'CANDID', s: 'BM -', nb: '6156' },
+      { n: 'CARTIER', s: 'BM -', nb: '6157' },
+      { n: 'EMERALD STONE', s: 'BM -', nb: '6158' },
+      { n: 'MAROON AQUA', s: 'BM -', nb: '6159' },
+      { n: 'MAROON FOSSILE', s: 'BM -', nb: '6160' },
+      { n: 'MAROON GREEN', s: 'BM -', nb: '6161' },
+      { n: 'DEVIS BLACK', s: 'HG -', nb: '6170' },
+      { n: 'COPPER WAVE', s: 'LQD-EN -', nb: '1074' },
+      { n: 'CRISP NATURAL', s: 'LQD-EN -', nb: '1075' },
+      { n: 'CRISP WARM', s: 'LQD-EN -', nb: '1076' },
+      { n: 'JURIAL GOLD', s: 'LQD-EN -', nb: '1077' },
+      { n: 'FERRA WHITE', s: 'LQD-EN -', nb: '2199' },
+      { n: 'GOLDEN CYCLON', s: 'LQD-EN -', nb: '2200' },
+      { n: 'GREY GOLD', s: 'LQD-EN -', nb: '2201' },
+      { n: 'MONARCH COPPER', s: 'LQD-EN -', nb: '2202' },
+      { n: 'REDICO WHITE', s: 'LQD-EN -', nb: '2203' },
+      { n: 'ROSIE GOLD', s: 'LQD-EN -', nb: '2204' },
+      { n: 'ADCTION GOLD', s: 'LQD-EN -', nb: '6162' },
+      { n: 'ALVINO GOLD', s: 'LQD-EN -', nb: '6163' },
+      { n: 'BLEACH AQUA', s: 'LQD-EN -', nb: '6164' },
+      { n: 'GOLDEN ANGLE', s: 'LQD-EN -', nb: '6165' },
+      { n: 'GOLDEN SPIRAL', s: 'LQD-EN -', nb: '6166' },
+      { n: 'LETIS GOLD', s: 'LQD-EN -', nb: '6167' },
+      { n: 'LUXURINT GOLD', s: 'LQD-EN -', nb: '6168' },
+      { n: 'OLLIN NATURAL', s: 'LQD-EN -', nb: '6169' }
+    ];
+
+    var catalog = [];
+    var selected = {};
+    var rows = [];
+    var editIdx = -1;
+    var sortCol = '';
+    var sortAsc = true;
+    var ridSeq = 0;
+
+    for (var _s = 0; _s < SEED.length; _s++) {
+      catalog.push({ n: SEED[_s].n, s: SEED[_s].s, nb: SEED[_s].nb });
+    }
+
+    function gid(id) { return document.getElementById(id); }
+
+    function esc(v) {
+      return String(v)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function uid() { return 'r' + String(++ridSeq); }
+
+    var _tt = null;
+    function toast(msg, type) {
+      var el = gid('toastEl');
+      el.textContent = msg;
+      el.className = 'toast t-' + (type || 'info');
+      el.classList.add('show');
+      clearTimeout(_tt);
+      _tt = setTimeout(function () { el.classList.remove('show'); }, 2800);
+    }
+
+    var searchQ = '';
+
+    function getFiltered() {
+      var q = searchQ.trim().toLowerCase();
+      if (!q) return catalog;
+      var out = [];
+      for (var i = 0; i < catalog.length; i++) {
+        var d = catalog[i];
+        if (d.n.toLowerCase().indexOf(q) >= 0 ||
+          d.s.toLowerCase().indexOf(q) >= 0 ||
+          String(d.nb).indexOf(q) >= 0) { out.push(d); }
+      }
+      return out;
+    }
+
+    function hlText(text, q) {
+      if (!q.trim()) return esc(text);
+      var lo = text.toLowerCase(), loq = q.trim().toLowerCase();
+      var i = lo.indexOf(loq);
+      if (i < 0) return esc(text);
+      return esc(text.slice(0, i)) +
+        '<span class="hl">' + esc(text.slice(i, i + loq.length)) + '</span>' +
+        esc(text.slice(i + loq.length));
+    }
+
+    function renderList() {
+      var filtered = getFiltered();
+      gid('srchStats').textContent = searchQ.trim()
+        ? (filtered.length + ' of ' + catalog.length + ' designs')
+        : ('Showing all ' + catalog.length + ' designs');
+
+      var list = gid('dlist');
+      if (!filtered.length) {
+        list.innerHTML = '<div class="no-res">No designs match &ldquo;' + esc(searchQ) + '&rdquo;</div>';
+        return;
+      }
+      var MAX = 150, shown = filtered.length > MAX ? filtered.slice(0, MAX) : filtered;
+      var html = '';
+      for (var i = 0; i < shown.length; i++) {
+        var d = shown[i], isSel = selected[d.n] ? ' sel' : '';
+        html += '<div class="ditem' + isSel + '" data-nm="' + esc(d.n) + '">' +
+          '<span class="dname">' + hlText(d.n, searchQ) + '</span>' +
+          '<span style="display:flex;align-items:center;gap:3px">' +
+          '<span class="dnb">' + esc(String(d.nb)) + '</span>' +
+          (selected[d.n] ? '<span class="dchk">&#10003;</span>' : '') +
+          '</span></div>';
+      }
+      if (filtered.length > MAX) {
+        html += '<div class="no-res" style="font-size:11px;padding:6px">Showing ' + MAX + ' of ' + filtered.length + ' &mdash; refine search</div>';
+      }
+      list.innerHTML = html;
+    }
+
+    function selCount() { return Object.keys(selected).length; }
+    function updateShowBtn() { gid('showBtn').disabled = selCount() === 0; }
+
+    gid('dlist').addEventListener('click', function (e) {
+      var el = e.target;
+      while (el && el !== this) {
+        if (el.className && el.className.indexOf('ditem') >= 0) break;
+        el = el.parentNode;
+      }
+      if (!el || el === this) return;
+      var nm = el.getAttribute('data-nm');
+      if (!nm) return;
+      if (selected[nm]) { delete selected[nm]; } else { selected[nm] = true; }
+      renderList(); renderChips(); updateShowBtn();
+      gid('bdgSel').textContent = selCount() + ' selected';
+    });
+
+    function renderChips() {
+      var cnt = selCount();
+      gid('chipsCount').textContent = cnt + ' selected';
+      gid('btnClrAll').style.display = cnt > 0 ? 'inline' : 'none';
+      var names = Object.keys(selected);
+      if (!names.length) { gid('chipsWrap').innerHTML = ''; return; }
+      var html = '';
+      for (var i = 0; i < names.length; i++) {
+        var nm = names[i], label = nm.length > 22 ? nm.slice(0, 20) + '...' : nm;
+        html += '<div class="chip"><span title="' + esc(nm) + '">' + esc(label) + '</span>' +
+          '<button class="chip-x" data-nm="' + esc(nm) + '">&#215;</button></div>';
+      }
+      gid('chipsWrap').innerHTML = html;
+    }
+
+    gid('chipsWrap').addEventListener('click', function (e) {
+      var el = e.target;
+      while (el && el !== this) {
+        if (el.className && el.className.indexOf('chip-x') >= 0) break;
+        el = el.parentNode;
+      }
+      if (!el || el === this) return;
+      var nm = el.getAttribute('data-nm');
+      if (nm) {
+        delete selected[nm];
+        renderList(); renderChips(); updateShowBtn();
+        gid('bdgSel').textContent = selCount() + ' selected';
+      }
+    });
+
+    function clearAll() {
+      selected = {}; renderList(); renderChips(); updateShowBtn();
+      gid('bdgSel').textContent = '0 selected';
+    }
+
+    function selectVisible() {
+      var f = getFiltered();
+      for (var i = 0; i < f.length; i++) selected[f[i].n] = true;
+      renderList(); renderChips(); updateShowBtn();
+      gid('bdgSel').textContent = selCount() + ' selected';
+    }
+
+    function showResults() {
+      if (!selCount()) return;
+      var inTable = {}, names = Object.keys(selected), added = 0;
+      for (var i = 0; i < rows.length; i++) inTable[rows[i].n] = true;
+      for (var j = 0; j < names.length; j++) {
+        if (inTable[names[j]]) continue;
+        for (var k = 0; k < catalog.length; k++) {
+          if (catalog[k].n === names[j]) {
+            rows.push({ id: uid(), n: catalog[k].n, s: catalog[k].s, nb: catalog[k].nb, qty: 1, chk: false });
+            added++; break;
+          }
+        }
+      }
+      if (!added) { toast('All selected designs already in table', 'warn'); return; }
+      renderTable();
+      toast(added + ' design' + (added > 1 ? 's' : '') + ' added', 'ok');
+    }
+
+    function renderTable() {
+      var n = rows.length;
+      gid('resTitle').textContent = n > 0 ? ('Design Details (' + n + ')') : 'Design Details';
+      gid('resSub').textContent = n > 0 ? (n + ' design' + (n > 1 ? 's' : '') + ' ready to export') : 'Select designs and click SHOW';
+      gid('expInfo').textContent = n > 0 ? (n + ' item' + (n > 1 ? 's' : '') + ' ready to export') : 'No items to export';
+      gid('xlBtn').disabled = n === 0;
+      gid('pdfBtn').disabled = n === 0;
+      var anyChk = false, allChk = n > 0;
+      for (var i = 0; i < rows.length; i++) { if (rows[i].chk) anyChk = true; else allChk = false; }
+      gid('rmSelBtn').style.display = anyChk ? 'flex' : 'none';
+      var acb = gid('allCb'); acb.checked = allChk && n > 0; acb.indeterminate = !allChk && anyChk;
+      if (!n) {
+        gid('tbody').innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="ei">&#127912;</div><p>Select designs from the left panel and click <b>SHOW</b></p></div></td></tr>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i], bg = i % 2 ? ' style="background:#fafcff"' : '';
+        html += '<tr id="tr_' + r.id + '"' + bg + '>' +
+          '<td><input type="checkbox"' + (r.chk ? ' checked' : '') + ' class="rowcb" data-id="' + r.id + '"></td>' +
+          '<td style="color:#888;font-weight:600">' + (i + 1) + '</td>' +
+          '<td class="td-name">' + esc(r.n) + '</td>' +
+          '<td><span class="surf-tag">' + esc(r.s) + '</span></td>' +
+          '<td class="td-num">' + esc(String(r.nb)) + '</td>' +
+          '<td><input class="qty-inp" type="number" min="1" value="' + (r.qty || 1) + '" data-id="' + r.id + '"></td>' +
+          '<td><div class="row-acts">' +
+          '<button class="ib edit-btn" data-id="' + r.id + '" title="Edit">&#9998;</button>' +
+          '<button class="ib del del-btn" data-id="' + r.id + '" title="Remove">&#128465;</button>' +
+          '</div></td></tr>';
+      }
+      gid('tbody').innerHTML = html;
+    }
+
+    function rowById(id) { for (var i = 0; i < rows.length; i++) if (rows[i].id === id) return rows[i]; return null; }
+
+    function syncQty() {
+      var inps = document.querySelectorAll('.qty-inp');
+      for (var i = 0; i < inps.length; i++) {
+        var r = rowById(inps[i].getAttribute('data-id'));
+        if (r) r.qty = Math.max(1, parseInt(inps[i].value, 10) || 1);
+      }
+    }
+
+    gid('tbody').addEventListener('change', function (e) {
+      var el = e.target, id = el.getAttribute('data-id');
+      if (!id) return;
+      var r = rowById(id);
+      if (!r) return;
+      if (el.className.indexOf('rowcb') >= 0) { r.chk = el.checked; renderTable(); }
+      if (el.className.indexOf('qty-inp') >= 0) { r.qty = Math.max(1, parseInt(el.value, 10) || 1); }
+    });
+
+    gid('tbody').addEventListener('click', function (e) {
+      var el = e.target, id = el.getAttribute ? el.getAttribute('data-id') : null;
+      if (!id) return;
+      if (el.className.indexOf('edit-btn') >= 0) openEditModal(id);
+      if (el.className.indexOf('del-btn') >= 0) delRow(id);
+    });
+
+    gid('allCb').addEventListener('change', function () {
+      var v = this.checked; for (var i = 0; i < rows.length; i++) rows[i].chk = v; renderTable();
+    });
+
+    function removeChecked() {
+      var kept = [], before = rows.length;
+      for (var i = 0; i < rows.length; i++) if (!rows[i].chk) kept.push(rows[i]);
+      rows = kept; renderTable();
+      toast((before - rows.length) + ' row(s) removed', 'warn');
+    }
+
+    function delRow(id) {
+      var kept = [];
+      for (var i = 0; i < rows.length; i++) if (rows[i].id !== id) kept.push(rows[i]);
+      rows = kept; renderTable(); toast('Row removed', 'warn');
+    }
+
+    document.querySelector('thead').addEventListener('click', function (e) {
+      var th = e.target; while (th && th.tagName !== 'TH') th = th.parentNode;
+      if (!th || th.className.indexOf('sort') < 0) return;
+      var col = th.getAttribute('data-col'); if (!col) return;
+      if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; }
+      rows.sort(function (a, b) {
+        if (col === 'nb') { var av = parseInt(a.nb, 10) || 0, bv = parseInt(b.nb, 10) || 0; return sortAsc ? av - bv : bv - av; }
+        return sortAsc ? String(a[col] || '').localeCompare(String(b[col] || ''))
+          : String(b[col] || '').localeCompare(String(a[col] || ''));
+      });
+      renderTable();
+    });
+
+    function openAddModal() {
+      editIdx = -1; gid('modalTitle').textContent = 'Add New Design';
+      gid('mName').value = ''; gid('mSurf').value = ''; gid('mNum').value = '';
+      gid('modalOv').classList.add('open');
+      setTimeout(function () { gid('mName').focus(); }, 80);
+    }
+
+    function openEditModal(id) {
+      var r = rowById(id); if (!r) return;
+      editIdx = -1;
+      for (var i = 0; i < catalog.length; i++) { if (catalog[i].n === r.n) { editIdx = i; break; } }
+      gid('modalTitle').textContent = 'Edit Design';
+      gid('mName').value = r.n; gid('mSurf').value = r.s; gid('mNum').value = r.nb;
+      gid('modalOv').classList.add('open');
+    }
+
+    function closeModal() { gid('modalOv').classList.remove('open'); editIdx = -1; }
+
+    function saveModal() {
+      var name = gid('mName').value.trim().toUpperCase();
+      var surf = gid('mSurf').value.trim();
+      var num = gid('mNum').value.trim();
+      if (!name) { toast('Design name is required', 'err'); return; }
+      if (!surf) { toast('Surface is required', 'err'); return; }
+      if (!num) { toast('Numbar is required', 'err'); return; }
+      if (editIdx < 0) {
+        for (var i = 0; i < catalog.length; i++) { if (catalog[i].n === name) { toast('"' + name + '" already exists!', 'err'); return; } }
+        catalog.push({ n: name, s: surf, nb: num });
+        gid('bdgTotal').textContent = catalog.length + ' designs';
+        renderList(); closeModal(); toast('Added: ' + name, 'ok');
+      } else {
+        var old = catalog[editIdx].n; catalog[editIdx] = { n: name, s: surf, nb: num };
+        for (var j = 0; j < rows.length; j++) { if (rows[j].n === old) { rows[j].n = name; rows[j].s = surf; rows[j].nb = num; } }
+        gid('bdgTotal').textContent = catalog.length + ' designs';
+        renderList(); renderTable(); closeModal(); toast('Updated: ' + name, 'ok');
+      }
+    }
+
+    function closeConfirm() { gid('confOv').classList.remove('open'); }
+
+    function doExcel() {
+      if (!rows.length) return;
+      if (typeof XLSX === 'undefined') { toast('Excel library not loaded', 'err'); return; }
+      syncQty();
+      var dealer = gid('dealerInp').value.trim();
+      var date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+      var total = 0; for (var i = 0; i < rows.length; i++) total += (rows[i].qty || 1);
+      var wsArr = [];
+      if (dealer) wsArr.push(['DEALER NAME:', dealer]);
+      wsArr.push(['EXPORT DATE:', date], ['TOTAL DESIGNS:', rows.length], ['TOTAL QTY:', total], []);
+      wsArr.push(['SR.', 'DESIGN NAME', 'SURFACE', 'NUMBAR', 'QTY']);
+      for (var i = 0; i < rows.length; i++) { var r = rows[i]; wsArr.push([i + 1, r.n, r.s, r.nb, r.qty || 1]); }
+      var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(wsArr);
+      ws['!cols'] = [{ wch: 16 }, { wch: 36 }, { wch: 18 }, { wch: 10 }, { wch: 8 }];
+      var hr = dealer ? 6 : 5, hs = { font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, fill: { fgColor: { rgb: '1A3A5C' } }, alignment: { horizontal: 'center' } };
+      var cc = ['A', 'B', 'C', 'D', 'E'];
+      for (var c = 0; c < cc.length; c++) { var cl = cc[c] + hr; if (ws[cl]) ws[cl].s = hs; }
+      if (dealer && ws['B1']) ws['B1'].s = { font: { bold: true, sz: 14, color: { rgb: '1A3A5C' } }, alignment: { horizontal: 'left' } };
+      XLSX.utils.book_append_sheet(wb, ws, 'Design Details');
+      var surfs = {};
+      for (var i = 0; i < rows.length; i++) { var sv = rows[i].s || 'Other'; surfs[sv] = (surfs[sv] || 0) + (rows[i].qty || 1); }
+      var sa = [];
+      if (dealer) sa.push(['DEALER:', dealer], []);
+      sa.push(['Total Designs:', rows.length], ['Total Qty:', total], ['Date:', date], [], ['Surface', 'Total Qty']);
+      var sk = Object.keys(surfs); for (var i = 0; i < sk.length; i++) sa.push([sk[i], surfs[sk[i]]]);
+      var ws2 = XLSX.utils.aoa_to_sheet(sa); ws2['!cols'] = [{ wch: 22 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+      XLSX.writeFile(wb, 'Design_Details_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+      toast('Excel exported', 'ok');
+    }
+
+    function doPDF() {
+      if (!rows.length) return;
+      syncQty();
+      var dealer = gid('dealerInp').value.trim();
+      var title = dealer || 'Design Details Report';
+      var date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+      var total = 0; for (var i = 0; i < rows.length; i++) total += (rows[i].qty || 1);
+      var trs = '';
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i], bg = i % 2 ? '#f5f9fd' : '#fff';
+        trs += '<tr style="background:' + bg + '">' +
+          '<td style="text-align:center;color:#888;font-weight:600;padding:8px 10px;border:1px solid #dde3ea">' + (i + 1) + '</td>' +
+          '<td style="font-weight:600;color:#1a3a5c;padding:8px 12px;border:1px solid #dde3ea">' + esc(r.n) + '</td>' +
+          '<td style="text-align:center;padding:8px 10px;border:1px solid #dde3ea">' + esc(r.s) + '</td>' +
+          '<td style="text-align:center;font-family:monospace;color:#375623;font-weight:700;padding:8px 10px;border:1px solid #dde3ea">' + esc(String(r.nb)) + '</td>' +
+          '<td style="text-align:center;font-weight:700;color:#1a3a5c;padding:8px 10px;border:1px solid #dde3ea">' + (r.qty || 1) + '</td></tr>';
+      }
+      var badge = dealer ? '<div style="display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:2px 12px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">DEALER</div>' : '';
+      var sub = dealer ? 'Design Details Report &middot; Generated on ' + date : 'Generated on ' + date;
+      var metaD = dealer ? '<span>Dealer: <strong style="color:#1a3a5c">' + esc(dealer) + '</strong></span>' : '';
+      var foot = 'Report: ';
+      var htmlContent =
+        '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(title) + '</title>' +
+        '<style>*{box-sizing:border-box;margin:0;padding:0}' +
+        'body{font-family:"Segoe UI",Arial,sans-serif;padding:24px;color:#222}' +
+        '.hdr{background:linear-gradient(135deg,#1a3a5c,#2e74b5);color:#fff;padding:22px 28px;border-radius:8px 8px 0 0}' +
+        '.hdr h1{font-size:26px;font-weight:800;line-height:1.2}' +
+        '.hdr p{font-size:12px;opacity:.75;margin-top:5px}' +
+        '.meta{background:#ebf3fb;padding:10px 28px;border:1px solid #bdd7ee;border-top:none;display:flex;gap:24px;font-size:12px;color:#444;flex-wrap:wrap}' +
+        'table{width:100%;border-collapse:collapse}' +
+        'thead th{background:#1a3a5c;color:#fff;padding:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border:1px solid #0d2440}' +
+        '.foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:8px;border-top:1px solid #dde3ea}' +
+        '@media print{.np{display:none}body{padding:10mm 15mm}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}}' +
+        '</style></head><body>' +
+        '<div class="hdr">' + badge + '<h1>' + esc(title) + '</h1><p>' + sub + '</p></div>' +
+        '<div class="meta">' + metaD +
+        '<span>Total Designs: <strong style="color:#1a3a5c">' + rows.length + '</strong></span>' +
+        '<span>Total Qty: <strong style="color:#1a3a5c">' + total + '</strong></span>' +
+        '<span>Date: <strong style="color:#1a3a5c">' + date + '</strong></span></div>' +
+        '<table><thead><tr>' +
+        '<th style="width:40px">SR.</th><th style="text-align:left">DESIGN NAME</th>' +
+        '<th>SURFACE</th><th>NUMBAR</th><th>QTY</th></tr></thead>' +
+        '<tbody>' + trs + '</tbody>' +
+        '<tfoot><tr>' +
+        '<td colspan="4" style="text-align:right;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#1a3a5c">TOTAL QTY</td>' +
+        '<td style="text-align:center;font-weight:700;padding:10px;border:1px solid #dde3ea;background:#ebf3fb;color:#375623;font-size:16px">' + total + '</td>' +
+        '</tr></tfoot></table>' +
+        '<div class="foot"><span>' + foot + '</span><span>' + rows.length + ' item' + (rows.length !== 1 ? 's' : '') + ' | Total Qty: ' + total + '</span></div>' +
+        '<br></body></html>';
+
+      var iframe = document.createElement('iframe');
+      iframe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none;z-index:-1';
+      document.body.appendChild(iframe);
+      var idoc = iframe.contentWindow.document;
+      idoc.open(); idoc.write(htmlContent); idoc.close();
+      iframe.contentWindow.focus();
+      setTimeout(function () {
+
+        var element = idoc.body;
+
+        html2pdf()
+          .set({
+            margin: 10,
+            filename: 'Design_Report.pdf',
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          })
+          .from(element)
+          .save();
+
+        setTimeout(function () { document.body.removeChild(iframe); }, 2000);
+      }, 500);
+      toast('PDF preview opened', 'ok');
+    }
+
+    gid('srchInp').addEventListener('input', function () { searchQ = this.value; gid('srchClr').style.display = searchQ ? 'block' : 'none'; renderList(); });
+    gid('srchClr').addEventListener('click', function () { searchQ = ''; gid('srchInp').value = ''; this.style.display = 'none'; renderList(); });
+    gid('btnClrAll').addEventListener('click', clearAll);
+    gid('showBtn').addEventListener('click', showResults);
+    gid('addBtn').addEventListener('click', openAddModal);
+    gid('selAllBtn').addEventListener('click', selectVisible);
+    gid('rmSelBtn').addEventListener('click', removeChecked);
+    gid('xlBtn').addEventListener('click', doExcel);
+    gid('pdfBtn').addEventListener('click', doPDF);
+    gid('modalX').addEventListener('click', closeModal);
+    gid('modalCancel').addEventListener('click', closeModal);
+    gid('modalSave').addEventListener('click', saveModal);
+    gid('confCancel').addEventListener('click', closeConfirm);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { closeModal(); closeConfirm(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && gid('modalOv').classList.contains('open')) saveModal();
+    });
+
+    renderList();
+    renderTable();
+
+    /* ── MOBILE PANEL TOGGLE ── */
+    var hamBtn = gid('hamBtn');
+    var closePanelBtn = gid('closePanelBtn');
+    var leftPanel = document.querySelector('.left');
+    var leftOverlay = gid('leftOverlay');
+
+    function openPanel() {
+      leftPanel.classList.add('open');
+      leftOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closePanel() {
+      leftPanel.classList.remove('open');
+      leftOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    if (hamBtn) hamBtn.addEventListener('click', openPanel);
+    if (closePanelBtn) closePanelBtn.addEventListener('click', closePanel);
+    if (leftOverlay) leftOverlay.addEventListener('click', closePanel);
+
+    /* Close panel when user clicks SHOW on mobile */
+    var origShow = gid('showBtn');
+    if (origShow) {
+      origShow.addEventListener('click', function () {
+        if (window.innerWidth <= 900) closePanel();
+      });
+    }
+
+  </script>
 </body>
+
 </html>
